@@ -8,7 +8,7 @@ export type GameStatus = "playing" | "dead";
 export interface GameState {
   snake: Point[];
   dir: Dir;
-  queuedDir: Dir | null;
+  queue: Dir[];
   food: Point;
   score: number;
   status: GameStatus;
@@ -61,17 +61,21 @@ export function createState(random: () => number = Math.random): GameState {
   return {
     snake,
     dir: "right",
-    queuedDir: null,
+    queue: [],
     food,
     score: 0,
     status: "playing",
   };
 }
 
+const MAX_QUEUE = 2;
+
 export function queueDirection(state: GameState, dir: Dir): void {
   if (state.status !== "playing") return;
-  if (dir === OPPOSITE[state.dir]) return;
-  state.queuedDir = dir;
+  const facing = state.queue[state.queue.length - 1] ?? state.dir;
+  if (dir === facing || dir === OPPOSITE[facing]) return;
+  if (state.queue.length >= MAX_QUEUE) return;
+  state.queue.push(dir);
 }
 
 export function step(
@@ -80,8 +84,7 @@ export function step(
 ): GameState {
   if (state.status !== "playing") return state as GameState;
 
-  const dir = state.queuedDir ?? state.dir;
-  state.queuedDir = null;
+  const dir = state.queue.shift() ?? state.dir;
   state.dir = dir;
 
   const head = state.snake[0]!;

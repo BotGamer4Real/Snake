@@ -45,8 +45,7 @@ export class SnakeScene extends Phaser.Scene {
     this.glow = this.add.graphics();
     this.graphics = this.add.graphics();
 
-    this.input.keyboard?.disableGlobalCapture();
-    this.input.keyboard?.on("keydown", this.onKey, this);
+    window.addEventListener("keydown", this.onWindowKey, true);
     this.game.events.on(DIR_EVENT, this.onDir, this);
     this.game.events.on(RESTART_EVENT, this.restartRun, this);
     this.game.events.on(HUD_REQUEST, this.publishHud, this);
@@ -54,6 +53,7 @@ export class SnakeScene extends Phaser.Scene {
     this.input.on("pointerdown", this.onPointer, this);
 
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
+      window.removeEventListener("keydown", this.onWindowKey, true);
       this.game.events.off(DIR_EVENT, this.onDir, this);
       this.game.events.off(RESTART_EVENT, this.restartRun, this);
       this.game.events.off(HUD_REQUEST, this.publishHud, this);
@@ -118,6 +118,10 @@ export class SnakeScene extends Phaser.Scene {
     }
     this.publishHud();
   }
+
+  private onWindowKey = (event: KeyboardEvent): void => {
+    this.onKey(event);
+  };
 
   private onKey(event: KeyboardEvent): void {
     if (isTypingInField(event)) return;
