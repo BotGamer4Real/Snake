@@ -170,7 +170,7 @@ export class SnakeScene extends Phaser.Scene {
   private publishHud(): void {
     this.game.events.emit(HUD_EVENT, {
       score: this.state.score,
-      highScore: Math.max(this.highScore, this.state.score),
+      highScore: this.highScore,
       status: this.state.status,
       newBest:
         this.state.status === "dead" &&
