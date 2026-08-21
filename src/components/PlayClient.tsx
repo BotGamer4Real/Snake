@@ -1,6 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import { AuthProvider } from "@/components/AuthProvider";
 
 const GameCanvas = dynamic(() => import("@/components/GameCanvas"), {
   ssr: false,
@@ -12,5 +13,9 @@ const GameCanvas = dynamic(() => import("@/components/GameCanvas"), {
 });
 
 export function PlayClient() {
-  return <GameCanvas />;
+  return (
+    <AuthProvider>
+      <GameCanvas />
+    </AuthProvider>
+  );
 }

@@ -1,11 +1,13 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { AccountBar } from "@/components/AccountBar";
 import { DPad } from "@/components/DPad";
 import { Hud } from "@/components/Hud";
+import { useAuth } from "@/components/AuthProvider";
 import { COLS, ROWS } from "@/game/constants";
 import type { Dir } from "@/game/engine";
-import { DIR_EVENT, HUD_EVENT, HUD_REQUEST, RESTART_EVENT, type HudPayload } from "@/game/events";
+import { DIR_EVENT, HIGH_SCORE_SET, HUD_EVENT, HUD_REQUEST, RESTART_EVENT, type HudPayload } from "@/game/events";
 import { CELL, PAD } from "@/game/theme";
 
 const GAME_WIDTH = COLS * CELL + PAD * 2;
@@ -31,6 +33,12 @@ export default function GameCanvas() {
   const parentRef = useRef<HTMLDivElement>(null);
   const gameRef = useRef<GameHandle | null>(null);
   const [hud, setHud] = useState<HudPayload>(idleHud);
+  const { highScore: cloudHighScore } = useAuth();
+  const cloudHighScoreRef = useRef(cloudHighScore);
+
+  useEffect(() => {
+    cloudHighScoreRef.current = cloudHighScore;
+  }, [cloudHighScore]);
 
   useEffect(() => {
     const parent = parentRef.current;
@@ -46,6 +54,9 @@ export default function GameCanvas() {
       gameRef.current = game;
       game.events.on(HUD_EVENT, onHud);
       game.events.emit(HUD_REQUEST);
+      if (cloudHighScoreRef.current != null) {
+        game.events.emit(HIGH_SCORE_SET, cloudHighScoreRef.current);
+      }
     })();
 
     return () => {
@@ -55,6 +66,11 @@ export default function GameCanvas() {
       gameRef.current = null;
     };
   }, []);
+
+  useEffect(() => {
+    if (cloudHighScore == null) return;
+    gameRef.current?.events.emit(HIGH_SCORE_SET, cloudHighScore);
+  }, [cloudHighScore]);
 
   const emitDir = (dir: Dir) => {
     gameRef.current?.events.emit(DIR_EVENT, dir);
@@ -68,6 +84,7 @@ export default function GameCanvas() {
 
   return (
     <div className="flex w-full flex-col items-center">
+      <AccountBar />
       <Hud hud={hud} />
       <div className="relative w-full max-w-[688px]">
         <div className="pointer-events-none absolute -inset-8 rounded-[36px] bg-emerald-400/10 blur-3xl" />

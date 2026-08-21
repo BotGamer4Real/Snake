@@ -8,7 +8,8 @@ import {
   type GameState,
   type Point,
 } from "./engine";
-import { DIR_EVENT, HUD_EVENT, HUD_REQUEST, RESTART_EVENT } from "./events";
+import { DIR_EVENT, HIGH_SCORE_SET, HUD_EVENT, HUD_REQUEST, RESTART_EVENT } from "./events";
+import { persistHighScore } from "@/lib/profile";
 import { loadHighScore, saveHighScore } from "./progress";
 import { CELL, COLOR, PAD } from "./theme";
 
@@ -52,12 +53,14 @@ export class SnakeScene extends Phaser.Scene {
     this.game.events.on(DIR_EVENT, this.onDir, this);
     this.game.events.on(RESTART_EVENT, this.restartRun, this);
     this.game.events.on(HUD_REQUEST, this.publishHud, this);
+    this.game.events.on(HIGH_SCORE_SET, this.onCloudHighScore, this);
     this.input.on("pointerdown", this.onPointer, this);
 
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
       this.game.events.off(DIR_EVENT, this.onDir, this);
       this.game.events.off(RESTART_EVENT, this.restartRun, this);
       this.game.events.off(HUD_REQUEST, this.publishHud, this);
+      this.game.events.off(HIGH_SCORE_SET, this.onCloudHighScore, this);
     });
 
     this.publishHud();
@@ -111,6 +114,10 @@ export class SnakeScene extends Phaser.Scene {
       this.highScore = saveHighScore(this.state.score);
       this.deathFlash = 280;
       this.cameras.main.shake(160, 0.006);
+      void persistHighScore(this.state.score).then((merged) => {
+        this.highScore = merged;
+        this.publishHud();
+      });
     }
     this.publishHud();
   }
@@ -130,6 +137,12 @@ export class SnakeScene extends Phaser.Scene {
       event.preventDefault();
       this.restartRun();
     }
+  }
+
+  private onCloudHighScore(score: number): void {
+    if (!Number.isFinite(score)) return;
+    this.highScore = Math.max(this.highScore, score);
+    this.publishHud();
   }
 
   private onDir(dir: Dir): void {

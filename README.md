@@ -14,3 +14,5 @@ See `docs/REQUIREMENTS.md` and `docs/BALANCE-PLATFORM.md`.
 npm install
 npm run dev
 ```
+
+Email sign-in uses the linked Snake Supabase project. Sessions persist in the browser. High scores sync as the max of local and cloud, so the same account can continue on another device after signing in.
