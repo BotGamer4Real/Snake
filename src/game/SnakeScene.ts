@@ -49,6 +49,7 @@ export class SnakeScene extends Phaser.Scene {
     this.glow = this.add.graphics();
     this.graphics = this.add.graphics();
 
+    this.input.keyboard?.disableGlobalCapture();
     this.input.keyboard?.on("keydown", this.onKey, this);
     this.game.events.on(DIR_EVENT, this.onDir, this);
     this.game.events.on(RESTART_EVENT, this.restartRun, this);
@@ -123,6 +124,8 @@ export class SnakeScene extends Phaser.Scene {
   }
 
   private onKey(event: KeyboardEvent): void {
+    if (isTypingInField(event)) return;
+
     const key = event.key.toLowerCase();
     const dir = keyToDir(key);
     if (dir) {
@@ -366,6 +369,14 @@ function mixColor(a: number, b: number, t: number): number {
   const g = Math.round(lerp(ag, bg, t));
   const bl = Math.round(lerp(ab, bb, t));
   return (r << 16) | (g << 8) | bl;
+}
+
+function isTypingInField(event: KeyboardEvent): boolean {
+  const target = event.target;
+  if (!(target instanceof HTMLElement)) return false;
+  if (target.isContentEditable) return true;
+  const tag = target.tagName;
+  return tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT";
 }
 
 function keyToDir(key: string): Dir | null {
