@@ -10,7 +10,7 @@ import {
 } from "react";
 import type { Session, User } from "@supabase/supabase-js";
 import { mergeHighScoreWithCloud, type Profile } from "@/lib/profile";
-import { appUrl, getSupabase } from "@/lib/supabase";
+import { authRedirectUrl, getSupabase } from "@/lib/supabase";
 
 type AuthContextValue = {
   user: User | null;
@@ -26,6 +26,7 @@ type AuthContextValue = {
   ) => Promise<string | null>;
   signOut: () => Promise<void>;
   sendReset: (email: string) => Promise<string | null>;
+  resendConfirmation: (email: string) => Promise<string | null>;
   updatePassword: (password: string) => Promise<string | null>;
   refreshProfile: () => Promise<number | null>;
 };
@@ -99,7 +100,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         email,
         password,
         options: {
-          emailRedirectTo: appUrl(),
+          emailRedirectTo: authRedirectUrl(),
           data: { display_name: displayName },
         },
       });
@@ -118,7 +119,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const sendReset = useCallback(async (email: string) => {
     const { error } = await getSupabase().auth.resetPasswordForEmail(email, {
-      redirectTo: appUrl(),
+      redirectTo: authRedirectUrl(),
+    });
+    return error?.message ?? null;
+  }, []);
+
+  const resendConfirmation = useCallback(async (email: string) => {
+    const { error } = await getSupabase().auth.resend({
+      type: "signup",
+      email,
+      options: { emailRedirectTo: authRedirectUrl() },
     });
     return error?.message ?? null;
   }, []);
@@ -147,6 +157,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       signUp,
       signOut,
       sendReset,
+      resendConfirmation,
       updatePassword,
       refreshProfile,
     }),
@@ -160,6 +171,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       signUp,
       signOut,
       sendReset,
+      resendConfirmation,
       updatePassword,
       refreshProfile,
     ],

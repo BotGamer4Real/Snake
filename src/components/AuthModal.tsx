@@ -12,7 +12,7 @@ export function AuthModal({
   open: boolean;
   onClose: () => void;
 }) {
-  const { signIn, signUp, sendReset, updatePassword, recovering } = useAuth();
+  const { signIn, signUp, sendReset, resendConfirmation, updatePassword, recovering } = useAuth();
   const [mode, setMode] = useState<Mode>("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -192,6 +192,24 @@ export function AuthModal({
                 <div>
                   <button type="button" className="hover:text-white" onClick={() => setMode("reset")}>
                     Forgot password
+                  </button>
+                </div>
+                <div>
+                  <button
+                    type="button"
+                    className="hover:text-white"
+                    onClick={async () => {
+                      if (!email) {
+                        setMessage("Enter your email first.");
+                        return;
+                      }
+                      setBusy(true);
+                      const error = await resendConfirmation(email);
+                      setBusy(false);
+                      setMessage(error ?? "Confirmation email sent. Use the new link.");
+                    }}
+                  >
+                    Resend confirmation email
                   </button>
                 </div>
               </>
