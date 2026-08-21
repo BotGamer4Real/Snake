@@ -23,10 +23,6 @@ function lerp(a: number, b: number, t: number): number {
   return a + (b - a) * t;
 }
 
-function easeOut(t: number): number {
-  return 1 - (1 - t) * (1 - t);
-}
-
 export class SnakeScene extends Phaser.Scene {
   private state!: GameState;
   private highScore = 0;
@@ -88,7 +84,7 @@ export class SnakeScene extends Phaser.Scene {
       t = Math.min(1, this.elapsed / interval);
     }
 
-    this.draw(this.state.status === "playing" ? easeOut(t) : 1, time);
+    this.draw(this.state.status === "playing" ? t : 1, time);
   }
 
   private advance(): void {
