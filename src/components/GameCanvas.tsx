@@ -121,7 +121,7 @@ export default function GameCanvas() {
       </div>
       <DPad onDir={emitDir} onRestart={emitRestart} dead={dead} />
       <p className="mt-5 max-w-sm text-center text-xs tracking-[0.18em] text-white/35 uppercase">
-        WASD or arrows · eat · don&apos;t hit walls or yourself
+        WASD or arrows · eat · don&apos;t hit walls or yourself · git ok
       </p>
     </div>
   );
