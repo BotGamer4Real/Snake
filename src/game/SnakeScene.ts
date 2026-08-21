@@ -1,5 +1,5 @@
 import * as Phaser from "phaser";
-import { COLS, ROWS, tickMs } from "./constants";
+import { COLS, ROWS, START_DELAY_MS, tickMs } from "./constants";
 import {
   createState,
   queueDirection,
@@ -33,6 +33,7 @@ export class SnakeScene extends Phaser.Scene {
   private glow!: Phaser.GameObjects.Graphics;
   private bursts: Burst[] = [];
   private deathFlash = 0;
+  private startDelay = 0;
 
   constructor() {
     super("SnakeScene");
@@ -74,6 +75,14 @@ export class SnakeScene extends Phaser.Scene {
     }
 
     let t = 1;
+    if (this.state.status === "playing" && this.startDelay > 0) {
+      const before = Math.ceil(this.startDelay / 1000);
+      this.startDelay = Math.max(0, this.startDelay - delta);
+      const after = this.startDelay > 0 ? Math.ceil(this.startDelay / 1000) : 0;
+      if (before !== after) this.publishHud();
+      this.draw(1, time);
+      return;
+    }
     if (this.state.status === "playing") {
       this.elapsed += delta;
       const interval = tickMs(this.state.score);
@@ -168,6 +177,7 @@ export class SnakeScene extends Phaser.Scene {
     this.toSnake = clonePoints(this.state.snake);
     this.bursts = [];
     this.deathFlash = 0;
+    this.startDelay = START_DELAY_MS;
     if (publish) this.publishHud();
   }
 
@@ -176,6 +186,10 @@ export class SnakeScene extends Phaser.Scene {
       score: this.state.score,
       highScore: this.highScore,
       status: this.state.status,
+      countdown:
+        this.state.status === "playing" && this.startDelay > 0
+          ? Math.max(1, Math.ceil(this.startDelay / 1000))
+          : null,
       newBest:
         this.state.status === "dead" &&
         this.state.score >= this.highScore &&

@@ -18,6 +18,7 @@ const idleHud: HudPayload = {
   highScore: 0,
   status: "playing",
   newBest: false,
+  countdown: 3,
 };
 
 export default function GameCanvas() {
@@ -93,6 +94,13 @@ export default function GameCanvas() {
           className="relative w-full overflow-hidden rounded-[28px] border border-white/10 shadow-[0_30px_80px_rgba(0,0,0,0.55),inset_0_1px_0_rgba(255,255,255,0.12)]"
           style={{ aspectRatio: `${GAME_WIDTH} / ${GAME_HEIGHT}` }}
         />
+        {hud.countdown != null && !dead && (
+          <div className="pointer-events-none absolute inset-0 flex items-center justify-center rounded-[28px] bg-slate-950/35">
+            <p className="font-mono text-7xl font-semibold text-white drop-shadow-[0_0_24px_rgba(52,211,153,0.55)]">
+              {hud.countdown}
+            </p>
+          </div>
+        )}
         {dead && (
           <div
             className="absolute inset-0 flex items-center justify-center rounded-[28px] bg-slate-950/55 backdrop-blur-[6px]"

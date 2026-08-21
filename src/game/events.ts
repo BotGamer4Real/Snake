@@ -9,4 +9,5 @@ export type HudPayload = {
   highScore: number;
   status: "playing" | "dead";
   newBest: boolean;
+  countdown: number | null;
 };
