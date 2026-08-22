@@ -34,18 +34,21 @@ import { COLOR, HUNTER_COLOR } from "./theme";
 
 type Point = { x: number; y: number };
 
+type Motion = {
+  from: Point;
+  to: Point;
+  elapsed: number;
+  duration: number;
+};
+
 export class ChaseScene extends Phaser.Scene {
   private state!: ChaseState;
   private highScore = 0;
   private graphics!: Phaser.GameObjects.Graphics;
   private startDelay = 0;
   private deathDelay = 0;
-  private playerElapsed = 0;
-  private hunterWait: Record<string, number> = {};
-  private fromPlayer: Point = { x: 0, y: 0 };
-  private toPlayer: Point = { x: 0, y: 0 };
-  private fromHunters: Point[] = [];
-  private toHunters: Point[] = [];
+  private playerMove: Motion = { from: { x: 0, y: 0 }, to: { x: 0, y: 0 }, elapsed: 0, duration: 260 };
+  private hunterMoves: Motion[] = [];
   private scoredDeath = false;
 
   constructor() {
@@ -73,12 +76,12 @@ export class ChaseScene extends Phaser.Scene {
     });
 
     this.publishHud();
-    this.draw(1);
+    this.draw(0);
   }
 
   update(time: number, delta: number): void {
     if (this.state.status === "dead") {
-      this.draw(1, time);
+      this.draw(time);
       return;
     }
 
@@ -88,7 +91,7 @@ export class ChaseScene extends Phaser.Scene {
       if (before !== (this.startDelay > 0 ? Math.ceil(this.startDelay / 1000) : 0)) {
         this.publishHud();
       }
-      this.draw(1, time);
+      this.draw(time);
       return;
     }
 
@@ -100,52 +103,72 @@ export class ChaseScene extends Phaser.Scene {
         this.snapActors();
         this.publishHud();
       }
-      this.draw(1, time);
+      this.draw(time);
       return;
     }
 
     advanceWave(this.state, delta);
 
-    this.playerElapsed += delta;
-    const pStep = playerStepMs(this.state.level);
-    while (this.playerElapsed >= pStep && this.state.status === "playing") {
-      this.playerElapsed -= pStep;
-      this.fromPlayer = { ...this.toPlayer };
+    this.advanceMotion(this.playerMove, delta, playerStepMs(this.state.level), () => {
       stepPlayer(this.state);
-      this.toPlayer = { x: this.state.player.x, y: this.state.player.y };
-      this.publishHud();
-    }
+      return { x: this.state.player.x, y: this.state.player.y };
+    });
 
     for (let i = 0; i < this.state.hunters.length; i += 1) {
       const hunter = this.state.hunters[i]!;
-      this.hunterWait[hunter.id] = (this.hunterWait[hunter.id] ?? 0) + delta;
+      const move = this.hunterMoves[i];
+      if (!move) continue;
       const interval = hunterStepMs(
         this.state.level,
         hunter.mode === "fright",
         hunter.mode === "eaten",
       );
-      while ((this.hunterWait[hunter.id] ?? 0) >= interval && this.state.status === "playing") {
-        this.hunterWait[hunter.id]! -= interval;
-        this.fromHunters[i] = { ...this.toHunters[i]! };
+      this.advanceMotion(move, delta, interval, () => {
         moveHunter(this.state, hunter);
-        this.toHunters[i] = { x: hunter.x, y: hunter.y };
-        this.publishHud();
-      }
+        return { x: hunter.x, y: hunter.y };
+      });
     }
 
     this.onDeathIfNeeded();
+    this.draw(time);
+  }
 
-    const t = Math.min(1, this.playerElapsed / pStep);
-    this.draw(t, time);
+  private advanceMotion(
+    move: Motion,
+    delta: number,
+    nextDuration: number,
+    step: () => Point,
+  ): void {
+    if (this.state.status !== "playing") return;
+    move.elapsed += delta;
+    if (move.elapsed < move.duration) return;
+    move.elapsed -= move.duration;
+    if (move.elapsed >= move.duration) move.elapsed = 0;
+    move.from = { ...move.to };
+    move.to = step();
+    move.duration = Math.max(1, nextDuration);
+    this.publishHud();
   }
 
   private snapActors(): void {
-    this.fromPlayer = { x: this.state.player.x, y: this.state.player.y };
-    this.toPlayer = { ...this.fromPlayer };
-    this.fromHunters = this.state.hunters.map((h) => ({ x: h.x, y: h.y }));
-    this.toHunters = this.fromHunters.map((p) => ({ ...p }));
-    this.playerElapsed = 0;
-    this.hunterWait = {};
+    const player = { x: this.state.player.x, y: this.state.player.y };
+    const playerDuration = playerStepMs(this.state.level);
+    this.playerMove = {
+      from: player,
+      to: { ...player },
+      elapsed: playerDuration,
+      duration: playerDuration,
+    };
+    this.hunterMoves = this.state.hunters.map((hunter) => {
+      const pos = { x: hunter.x, y: hunter.y };
+      const duration = hunterStepMs(this.state.level, false, false);
+      return {
+        from: pos,
+        to: { ...pos },
+        elapsed: duration,
+        duration,
+      };
+    });
   }
 
   private onDeathIfNeeded(): void {
@@ -221,7 +244,12 @@ export class ChaseScene extends Phaser.Scene {
     });
   }
 
-  private draw(t: number, time = 0): void {
+  private motionT(move: Motion | undefined): number {
+    if (!move || this.state.status !== "playing" || this.startDelay > 0) return 1;
+    return Math.min(1, move.elapsed / Math.max(1, move.duration));
+  }
+
+  private draw(time = 0): void {
     const g = this.graphics;
     g.clear();
     const ox = PAD;
@@ -264,15 +292,14 @@ export class ChaseScene extends Phaser.Scene {
       }
     }
 
-    const player = lerpPoint(this.fromPlayer, this.toPlayer, this.state.status === "playing" ? t : 1);
+    const player = lerpPoint(this.playerMove.from, this.playerMove.to, this.motionT(this.playerMove));
     this.drawPlayer(g, player, this.state.player.dir);
     for (let i = 0; i < this.state.hunters.length; i += 1) {
       const hunter = this.state.hunters[i]!;
-      const pos = lerpPoint(
-        this.fromHunters[i] ?? hunter,
-        this.toHunters[i] ?? hunter,
-        this.state.status === "playing" ? t : 1,
-      );
+      const move = this.hunterMoves[i];
+      const pos = move
+        ? lerpPoint(move.from, move.to, this.motionT(move))
+        : { x: hunter.x, y: hunter.y };
       this.drawHunter(g, hunter, pos, time);
     }
   }
@@ -335,11 +362,18 @@ export class ChaseScene extends Phaser.Scene {
   }
 }
 
+function shortestDelta(from: number, to: number, size: number): number {
+  let delta = to - from;
+  if (delta > size / 2) delta -= size;
+  if (delta < -size / 2) delta += size;
+  return delta;
+}
+
 function lerpPoint(a: Point, b: Point, t: number): Point {
-  const dx = b.x - a.x;
-  const dy = b.y - a.y;
-  if (Math.abs(dx) > COLS / 2 || Math.abs(dy) > ROWS / 2) return b;
-  return { x: a.x + dx * t, y: a.y + dy * t };
+  return {
+    x: a.x + shortestDelta(a.x, b.x, COLS) * t,
+    y: a.y + shortestDelta(a.y, b.y, ROWS) * t,
+  };
 }
 
 function dirDelta(dir: Dir): Point {
