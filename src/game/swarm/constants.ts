@@ -28,7 +28,7 @@ export const PLAYER_MARGIN = 10;
 
 export const SHOT_W = 3;
 export const SHOT_H = 10;
-export const PLAYER_SHOT_SPEED = 260;
+export const PLAYER_SHOT_SPEED = 520;
 export const ALIEN_SHOT_SPEED = 96;
 
 export const MYSTERY_W = 28;
