@@ -1,6 +1,7 @@
 export const MOVE_START = "swarm-move-start";
 export const MOVE_END = "swarm-move-end";
 export const FIRE_EVENT = "swarm-fire";
+export const FIRE_END = "swarm-fire-end";
 export const RESTART_EVENT = "swarm-restart";
 export const HUD_EVENT = "swarm-hud";
 export const HUD_REQUEST = "swarm-hud-request";

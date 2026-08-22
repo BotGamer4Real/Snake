@@ -25,6 +25,7 @@ import {
   type SwarmState,
 } from "./engine";
 import {
+  FIRE_END,
   FIRE_EVENT,
   HIGH_SCORE_SET,
   HUD_EVENT,
@@ -44,6 +45,7 @@ export class SwarmScene extends Phaser.Scene {
   private deathDelay = 0;
   private waveDelay = 0;
   private hold: Record<SwarmDir, boolean> = { left: false, right: false };
+  private fireHeld = false;
   private scoredDeath = false;
 
   constructor() {
@@ -60,7 +62,8 @@ export class SwarmScene extends Phaser.Scene {
     window.addEventListener("keyup", this.onKeyUp, true);
     this.game.events.on(MOVE_START, this.onMoveStart, this);
     this.game.events.on(MOVE_END, this.onMoveEnd, this);
-    this.game.events.on(FIRE_EVENT, this.onFire, this);
+    this.game.events.on(FIRE_EVENT, this.onFireStart, this);
+    this.game.events.on(FIRE_END, this.onFireEnd, this);
     this.game.events.on(RESTART_EVENT, this.restartRun, this);
     this.game.events.on(HUD_REQUEST, this.publishHud, this);
     this.game.events.on(HIGH_SCORE_SET, this.onCloudHighScore, this);
@@ -70,7 +73,8 @@ export class SwarmScene extends Phaser.Scene {
       window.removeEventListener("keyup", this.onKeyUp, true);
       this.game.events.off(MOVE_START, this.onMoveStart, this);
       this.game.events.off(MOVE_END, this.onMoveEnd, this);
-      this.game.events.off(FIRE_EVENT, this.onFire, this);
+      this.game.events.off(FIRE_EVENT, this.onFireStart, this);
+      this.game.events.off(FIRE_END, this.onFireEnd, this);
       this.game.events.off(RESTART_EVENT, this.restartRun, this);
       this.game.events.off(HUD_REQUEST, this.publishHud, this);
       this.game.events.off(HIGH_SCORE_SET, this.onCloudHighScore, this);
@@ -124,6 +128,7 @@ export class SwarmScene extends Phaser.Scene {
       wave: this.state.wave,
     };
     movePlayer(this.state, dir, delta);
+    if (this.fireHeld) firePlayer(this.state);
     tick(this.state, delta);
     this.onDeathIfNeeded();
     if (
@@ -168,7 +173,8 @@ export class SwarmScene extends Phaser.Scene {
       this.hold.right = true;
     } else if (key === " " || key === "arrowup" || key === "w" || key === "x") {
       event.preventDefault();
-      if (!event.repeat) firePlayer(this.state);
+      this.fireHeld = true;
+      firePlayer(this.state);
     }
   };
 
@@ -176,6 +182,7 @@ export class SwarmScene extends Phaser.Scene {
     const key = event.key.toLowerCase();
     if (key === "arrowleft" || key === "a") this.hold.left = false;
     if (key === "arrowright" || key === "d") this.hold.right = false;
+    if (key === " " || key === "arrowup" || key === "w" || key === "x") this.fireHeld = false;
   };
 
   private onMoveStart(dir: SwarmDir): void {
@@ -186,8 +193,13 @@ export class SwarmScene extends Phaser.Scene {
     this.hold[dir] = false;
   }
 
-  private onFire(): void {
+  private onFireStart(): void {
+    this.fireHeld = true;
     firePlayer(this.state);
+  }
+
+  private onFireEnd(): void {
+    this.fireHeld = false;
   }
 
   private onCloudHighScore(score: number): void {
@@ -206,6 +218,7 @@ export class SwarmScene extends Phaser.Scene {
     this.deathDelay = 0;
     this.waveDelay = 0;
     this.hold = { left: false, right: false };
+    this.fireHeld = false;
     this.scoredDeath = false;
     if (publish) this.publishHud();
   }

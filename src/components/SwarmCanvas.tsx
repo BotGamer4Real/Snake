@@ -6,6 +6,7 @@ import { useAuth } from "@/components/AuthProvider";
 import { GAME_HEIGHT, GAME_WIDTH } from "@/game/swarm/constants";
 import type { SwarmDir, SwarmHud } from "@/game/swarm/events";
 import {
+  FIRE_END,
   FIRE_EVENT,
   HIGH_SCORE_SET,
   HUD_EVENT,
@@ -83,7 +84,8 @@ export default function SwarmCanvas({ onBack }: { onBack: () => void }) {
 
   const emitMoveStart = (dir: SwarmDir) => gameRef.current?.events.emit(MOVE_START, dir);
   const emitMoveEnd = (dir: SwarmDir) => gameRef.current?.events.emit(MOVE_END, dir);
-  const emitFire = () => gameRef.current?.events.emit(FIRE_EVENT);
+  const emitFireStart = () => gameRef.current?.events.emit(FIRE_EVENT);
+  const emitFireEnd = () => gameRef.current?.events.emit(FIRE_END);
   const emitRestart = () => gameRef.current?.events.emit(RESTART_EVENT);
   const dead = hud.status === "dead";
 
@@ -173,9 +175,14 @@ export default function SwarmCanvas({ onBack }: { onBack: () => void }) {
         </div>
       </div>
       <div className="shrink-0">
-        <SwarmPad onMoveStart={emitMoveStart} onMoveEnd={emitMoveEnd} onFire={emitFire} />
+        <SwarmPad
+          onMoveStart={emitMoveStart}
+          onMoveEnd={emitMoveEnd}
+          onFireStart={emitFireStart}
+          onFireEnd={emitFireEnd}
+        />
         <p className="mt-2 hidden text-center text-xs tracking-[0.18em] text-white/35 uppercase sm:mt-5 sm:block">
-          Arrows or AD · space to fire · one shot at a time
+          Arrows or AD · hold space to fire
         </p>
         <p className="mt-2 text-center text-[11px] tracking-[0.16em] text-white/35 uppercase sm:hidden">
           Hold to move · fire to shoot

@@ -5,11 +5,13 @@ import type { SwarmDir } from "@/game/swarm/events";
 export function SwarmPad({
   onMoveStart,
   onMoveEnd,
-  onFire,
+  onFireStart,
+  onFireEnd,
 }: {
   onMoveStart: (dir: SwarmDir) => void;
   onMoveEnd: (dir: SwarmDir) => void;
-  onFire: () => void;
+  onFireStart: () => void;
+  onFireEnd: () => void;
 }) {
   return (
     <div className="flex items-end justify-center gap-8 select-none">
@@ -25,8 +27,11 @@ export function SwarmPad({
         onPointerDown={(event) => {
           event.preventDefault();
           event.currentTarget.setPointerCapture(event.pointerId);
-          onFire();
+          onFireStart();
         }}
+        onPointerUp={onFireEnd}
+        onPointerCancel={onFireEnd}
+        onLostPointerCapture={onFireEnd}
       >
         <span className="text-sm font-semibold tracking-[0.18em] uppercase">Fire</span>
       </button>
