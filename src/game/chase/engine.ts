@@ -48,7 +48,7 @@ export interface ChaseState {
   status: ChaseStatus;
   wave: "scatter" | "chase";
   waveMs: number;
-  desired: Dir;
+  queue: Dir[];
 }
 
 const HUNTER_IDS: HunterId[] = ["ember", "drift", "coil", "dusk"];
@@ -112,13 +112,21 @@ export function createState(): ChaseState {
     status: "playing",
     wave: "scatter",
     waveMs: SCATTER_MS,
-    desired: "left",
+    queue: [],
   };
 }
 
-export function setDesired(state: ChaseState, dir: Dir): void {
+const MAX_QUEUE = 2;
+
+export function queueDirection(state: ChaseState, dir: Dir): void {
   if (state.status !== "playing") return;
-  state.desired = dir;
+  const last = state.queue[state.queue.length - 1] ?? state.player.dir;
+  if (dir === last) return;
+  if (state.queue.length >= MAX_QUEUE) {
+    state.queue[MAX_QUEUE - 1] = dir;
+    return;
+  }
+  state.queue.push(dir);
 }
 
 function canGo(
@@ -130,18 +138,22 @@ function canGo(
   return walkable(n.x, n.y);
 }
 
-function stepActor(
-  actor: Actor,
-  walkable: (x: number, y: number) => boolean,
-  desired?: Dir,
-): void {
-  if (desired && canGo(actor.x, actor.y, desired, walkable)) {
-    actor.dir = desired;
-  } else if (!canGo(actor.x, actor.y, actor.dir, walkable)) {
-    const options = exits(actor.x, actor.y, walkable);
-    if (options[0]) actor.dir = options[0];
-    else return;
+function choosePlayerDir(state: ChaseState): void {
+  const actor = state.player;
+  for (let i = 0; i < state.queue.length; i += 1) {
+    const dir = state.queue[i]!;
+    if (!canGo(actor.x, actor.y, dir, isPlayerWalkable)) continue;
+    actor.dir = dir;
+    state.queue.splice(i, 1);
+    return;
   }
+  if (canGo(actor.x, actor.y, actor.dir, isPlayerWalkable)) return;
+  const options = exits(actor.x, actor.y, isPlayerWalkable);
+  if (options[0]) actor.dir = options[0];
+}
+
+function stepActor(actor: Actor): void {
+  if (!canGo(actor.x, actor.y, actor.dir, isPlayerWalkable)) return;
   const d = DELTA[actor.dir];
   const n = wrap(actor.x + d.x, actor.y + d.y);
   actor.x = n.x;
@@ -253,7 +265,8 @@ function releaseHunters(state: ChaseState): void {
 
 export function stepPlayer(state: ChaseState): void {
   if (state.status !== "playing") return;
-  stepActor(state.player, isPlayerWalkable, state.desired);
+  choosePlayerDir(state);
+  stepActor(state.player);
   const { x, y } = state.player;
   if (state.pips[y]![x]) {
     state.pips[y]![x] = false;
@@ -349,7 +362,7 @@ export function afterDeath(state: ChaseState): void {
 
 function resetActors(state: ChaseState): void {
   state.player = { x: startTile.x, y: startTile.y, dir: "left" };
-  state.desired = "left";
+  state.queue = [];
   state.hunters = makeHunters();
 }
 

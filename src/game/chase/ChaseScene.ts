@@ -16,7 +16,7 @@ import {
   afterDeath,
   createState,
   moveHunter,
-  setDesired,
+  queueDirection,
   stepPlayer,
   type ChaseState,
   type Hunter,
@@ -188,7 +188,7 @@ export class ChaseScene extends Phaser.Scene {
   }
 
   private onWindowKey = (event: KeyboardEvent): void => {
-    if (isTypingInField(event)) return;
+    if (isTypingInField(event) || event.repeat) return;
     const key = event.key.toLowerCase();
     if (this.state.status === "dead" && (key === " " || key === "enter" || key === "r")) {
       event.preventDefault();
@@ -198,12 +198,12 @@ export class ChaseScene extends Phaser.Scene {
     const dir = keyToDir(key);
     if (dir) {
       event.preventDefault();
-      setDesired(this.state, dir);
+      queueDirection(this.state, dir);
     }
   };
 
   private onDir(dir: ChaseDir): void {
-    setDesired(this.state, dir);
+    queueDirection(this.state, dir);
   }
 
   private onCloudHighScore(score: number): void {
