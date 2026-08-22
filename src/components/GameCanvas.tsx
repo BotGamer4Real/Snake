@@ -168,7 +168,7 @@ export default function GameCanvas() {
         </div>
       </div>
       <div className="shrink-0">
-        <DPad onDir={emitDir} onRestart={emitRestart} dead={dead} />
+        <DPad onDir={emitDir} />
         <p className="mt-2 hidden text-center text-xs tracking-[0.18em] text-white/35 uppercase sm:mt-5 sm:block">
           WASD or arrows · eat · don&apos;t hit walls or yourself
         </p>
