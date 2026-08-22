@@ -12,10 +12,10 @@ export const START_DELAY_MS = 3000;
 export const DEATH_PAUSE_MS = 1400;
 export const START_LIVES = 3;
 
-export const PLAYER_STEP_MS = 312;
-export const HUNTER_STEP_MS = 336;
-export const FRIGHT_STEP_MS = 432;
-export const EATEN_STEP_MS = 108;
+export const PLAYER_STEP_MS = 271;
+export const HUNTER_STEP_MS = 292;
+export const FRIGHT_STEP_MS = 376;
+export const EATEN_STEP_MS = 94;
 export const FRIGHT_MS = 6200;
 export const SCATTER_MS = 6000;
 export const CHASE_MS = 18000;
@@ -31,13 +31,13 @@ export const LIFE_SPAWN_RANGE_MS = 12000;
 export const HIT_RADIUS = 0.48;
 
 export function playerStepMs(level: number): number {
-  return Math.max(186, PLAYER_STEP_MS - level * 8);
+  return Math.max(162, PLAYER_STEP_MS - level * 7);
 }
 
 export function hunterStepMs(level: number, frightened: boolean, eaten: boolean): number {
   if (eaten) return EATEN_STEP_MS;
-  if (frightened) return Math.max(288, FRIGHT_STEP_MS - level * 7);
-  return Math.max(204, HUNTER_STEP_MS - level * 8);
+  if (frightened) return Math.max(250, FRIGHT_STEP_MS - level * 6);
+  return Math.max(177, HUNTER_STEP_MS - level * 7);
 }
 
 export function frightMs(level: number): number {
