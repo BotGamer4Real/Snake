@@ -8,6 +8,8 @@ export const COLOR = {
   boost: 0xfda4af,
   player: 0x7dd3fc,
   playerGlow: 0x38bdf8,
+  life: 0x4ade80,
+  lifeGlow: 0x86efac,
 } as const;
 
 export const HUNTER_COLOR = {

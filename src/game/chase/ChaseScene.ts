@@ -5,6 +5,7 @@ import {
   CELL,
   COLS,
   DEATH_PAUSE_MS,
+  HIT_RADIUS,
   hunterStepMs,
   PAD,
   playerStepMs,
@@ -14,10 +15,12 @@ import {
 import {
   advanceWave,
   afterDeath,
+  contactHunter,
   createState,
   moveHunter,
   queueDirection,
   stepPlayer,
+  tickLevelTime,
   type ChaseState,
   type Hunter,
 } from "./engine";
@@ -108,6 +111,7 @@ export class ChaseScene extends Phaser.Scene {
     }
 
     advanceWave(this.state, delta);
+    tickLevelTime(this.state, delta);
 
     this.advanceMotion(this.playerMove, delta, playerStepMs(this.state.level), () => {
       stepPlayer(this.state);
@@ -129,8 +133,29 @@ export class ChaseScene extends Phaser.Scene {
       });
     }
 
+    this.checkVisualHits();
     this.onDeathIfNeeded();
     this.draw(time);
+  }
+
+  private checkVisualHits(): void {
+    if (this.state.status !== "playing") return;
+    const player = lerpPoint(
+      this.playerMove.from,
+      this.playerMove.to,
+      this.motionT(this.playerMove),
+    );
+    for (let i = 0; i < this.state.hunters.length; i += 1) {
+      const hunter = this.state.hunters[i]!;
+      const move = this.hunterMoves[i];
+      const pos = move
+        ? lerpPoint(move.from, move.to, this.motionT(move))
+        : { x: hunter.x, y: hunter.y };
+      if (tileDistance(player, pos) > HIT_RADIUS) continue;
+      contactHunter(this.state, hunter);
+      this.publishHud();
+      if (this.state.status !== "playing") return;
+    }
   }
 
   private advanceMotion(
@@ -292,6 +317,19 @@ export class ChaseScene extends Phaser.Scene {
       }
     }
 
+    if (this.state.lifeToken) {
+      const pulse = 1 + Math.sin(time / 160) * 0.12;
+      const cx = PAD + this.state.lifeToken.x * CELL + CELL / 2;
+      const cy = PAD + this.state.lifeToken.y * CELL + CELL / 2;
+      g.fillStyle(COLOR.lifeGlow, 0.35);
+      g.fillCircle(cx, cy, 9 * pulse);
+      g.fillStyle(COLOR.life, 1);
+      g.fillCircle(cx, cy, 5.5 * pulse);
+      g.fillStyle(0x052e16, 1);
+      g.fillRect(cx - 1.2, cy - 4.2, 2.4, 8.4);
+      g.fillRect(cx - 4.2, cy - 1.2, 8.4, 2.4);
+    }
+
     const player = lerpPoint(this.playerMove.from, this.playerMove.to, this.motionT(this.playerMove));
     this.drawPlayer(g, player, this.state.player.dir);
     for (let i = 0; i < this.state.hunters.length; i += 1) {
@@ -374,6 +412,12 @@ function lerpPoint(a: Point, b: Point, t: number): Point {
     x: a.x + shortestDelta(a.x, b.x, COLS) * t,
     y: a.y + shortestDelta(a.y, b.y, ROWS) * t,
   };
+}
+
+function tileDistance(a: Point, b: Point): number {
+  const dx = shortestDelta(a.x, b.x, COLS);
+  const dy = shortestDelta(a.y, b.y, ROWS);
+  return Math.hypot(dx, dy);
 }
 
 function dirDelta(dir: Dir): Point {

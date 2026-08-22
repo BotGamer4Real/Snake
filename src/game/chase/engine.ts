@@ -2,6 +2,10 @@ import {
   CHASE_MS,
   frightMs,
   HUNTER_SCORES,
+  LIFE_BONUS,
+  LIFE_SPAWN_MIN_MS,
+  LIFE_SPAWN_RANGE_MS,
+  MAX_LIVES,
   PIP_SCORE,
   BOOST_SCORE,
   SCATTER_MS,
@@ -49,6 +53,10 @@ export interface ChaseState {
   wave: "scatter" | "chase";
   waveMs: number;
   queue: Dir[];
+  levelElapsed: number;
+  lifeSpawnAt: number;
+  lifeSpawned: boolean;
+  lifeToken: { x: number; y: number } | null;
 }
 
 const HUNTER_IDS: HunterId[] = ["ember", "drift", "coil", "dusk"];
@@ -113,6 +121,23 @@ export function createState(): ChaseState {
     wave: "scatter",
     waveMs: SCATTER_MS,
     queue: [],
+    ...freshLifeToken(),
+  };
+}
+
+function randomLifeDelay(): number {
+  return LIFE_SPAWN_MIN_MS + Math.random() * LIFE_SPAWN_RANGE_MS;
+}
+
+function freshLifeToken(): Pick<
+  ChaseState,
+  "levelElapsed" | "lifeSpawnAt" | "lifeSpawned" | "lifeToken"
+> {
+  return {
+    levelElapsed: 0,
+    lifeSpawnAt: randomLifeDelay(),
+    lifeSpawned: false,
+    lifeToken: null,
   };
 }
 
@@ -287,7 +312,7 @@ export function stepPlayer(state: ChaseState): void {
     }
   }
   releaseHunters(state);
-  resolveHits(state);
+  pickupLifeToken(state);
   if (state.pipsLeft <= 0 && state.status === "playing") {
     nextLevel(state);
   }
@@ -329,26 +354,50 @@ export function moveHunter(state: ChaseState, hunter: Hunter): void {
   if (hunter.released && !inPen(hunter.x, hunter.y)) {
     hunter.released = true;
   }
-  resolveHits(state);
 }
 
-function resolveHits(state: ChaseState): void {
+export function contactHunter(state: ChaseState, hunter: Hunter): void {
   if (state.status !== "playing") return;
-  for (const hunter of state.hunters) {
-    if (hunter.x !== state.player.x || hunter.y !== state.player.y) continue;
-    if (hunter.mode === "eaten") continue;
-    if (hunter.mode === "fright") {
-      hunter.mode = "eaten";
-      hunter.frightMs = 0;
-      const prize = HUNTER_SCORES[Math.min(state.combo, HUNTER_SCORES.length - 1)]!;
-      state.score += prize;
-      state.combo += 1;
-      continue;
-    }
-    state.lives -= 1;
-    state.status = state.lives <= 0 ? "dead" : "dying";
+  if (hunter.mode === "eaten") return;
+  if (hunter.mode === "fright") {
+    hunter.mode = "eaten";
+    hunter.frightMs = 0;
+    const prize = HUNTER_SCORES[Math.min(state.combo, HUNTER_SCORES.length - 1)]!;
+    state.score += prize;
+    state.combo += 1;
     return;
   }
+  state.lives -= 1;
+  state.status = state.lives <= 0 ? "dead" : "dying";
+}
+
+export function tickLevelTime(state: ChaseState, dt: number): void {
+  if (state.status !== "playing") return;
+  state.levelElapsed += dt;
+  if (state.lifeSpawned || state.levelElapsed < state.lifeSpawnAt) return;
+  state.lifeSpawned = true;
+  state.lifeToken = pickLifeTile(state);
+}
+
+function pickLifeTile(state: ChaseState): { x: number; y: number } | null {
+  const spots: { x: number; y: number }[] = [];
+  for (let y = 0; y < ROWS; y += 1) {
+    for (let x = 0; x < COLS; x += 1) {
+      if (!isPlayerWalkable(x, y)) continue;
+      if (x === state.player.x && y === state.player.y) continue;
+      spots.push({ x, y });
+    }
+  }
+  if (spots.length === 0) return null;
+  return spots[Math.floor(Math.random() * spots.length)]!;
+}
+
+function pickupLifeToken(state: ChaseState): void {
+  const token = state.lifeToken;
+  if (!token) return;
+  if (token.x !== state.player.x || token.y !== state.player.y) return;
+  state.lifeToken = null;
+  state.lives = Math.min(MAX_LIVES, state.lives + LIFE_BONUS);
 }
 
 export function afterDeath(state: ChaseState): void {
@@ -377,4 +426,5 @@ function nextLevel(state: ChaseState): void {
   state.wave = "scatter";
   state.waveMs = SCATTER_MS;
   state.combo = 0;
+  Object.assign(state, freshLifeToken());
 }
