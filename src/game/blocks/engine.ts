@@ -24,7 +24,6 @@ export interface BlocksState {
   board: Board;
   current: ActivePiece;
   next: PieceId;
-  bag: PieceId[];
   score: number;
   lines: number;
   level: number;
@@ -242,22 +241,12 @@ function collides(board: Board, cells: Point[]): boolean {
   return false;
 }
 
-function shuffleBag(random: () => number): PieceId[] {
-  const bag = [...PIECE_IDS];
-  for (let i = bag.length - 1; i > 0; i -= 1) {
-    const j = Math.floor(random() * (i + 1));
-    const current = bag[i]!;
-    bag[i] = bag[j]!;
-    bag[j] = current;
+function pickPiece(random: () => number, previous?: PieceId): PieceId {
+  const first = PIECE_IDS[Math.floor(random() * PIECE_IDS.length)]!;
+  if (first === previous) {
+    return PIECE_IDS[Math.floor(random() * PIECE_IDS.length)]!;
   }
-  return bag;
-}
-
-function takePiece(state: BlocksState, random: () => number): PieceId {
-  if (state.bag.length === 0) {
-    state.bag = shuffleBag(random);
-  }
-  return state.bag.pop()!;
+  return first;
 }
 
 function spawnPiece(id: PieceId): ActivePiece {
@@ -286,24 +275,21 @@ function placePiece(board: Board, piece: ActivePiece): Board {
 }
 
 export function createState(random: () => number = Math.random): BlocksState {
+  const currentId = pickPiece(random);
+  const next = pickPiece(random, currentId);
+  const current = spawnPiece(currentId);
   const board = emptyBoard();
-  const state: BlocksState = {
+  const status: GameStatus = collides(board, pieceCells(current)) ? "dead" : "playing";
+  return {
     board,
-    current: spawnPiece("I"),
-    next: "I",
-    bag: shuffleBag(random),
+    current,
+    next,
     score: 0,
     lines: 0,
     level: 0,
-    status: "playing",
+    status,
     clearing: [],
   };
-  state.current = spawnPiece(takePiece(state, random));
-  state.next = takePiece(state, random);
-  if (collides(state.board, pieceCells(state.current))) {
-    state.status = "dead";
-  }
-  return state;
 }
 
 export function tryMove(state: BlocksState, dx: number, dy: number): boolean {
@@ -372,7 +358,7 @@ export function commitClear(state: BlocksState): void {
 
 function spawnNext(state: BlocksState): void {
   const current = spawnPiece(state.next);
-  state.next = takePiece(state, Math.random);
+  state.next = pickPiece(Math.random, current.id);
   state.current = current;
   if (collides(state.board, pieceCells(current))) {
     state.status = "dead";
