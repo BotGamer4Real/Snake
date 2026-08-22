@@ -12,8 +12,8 @@ export function DPad({
   dead: boolean;
 }) {
   return (
-    <div className="mt-5 flex flex-col items-center gap-4 select-none">
-      <div className="grid grid-cols-3 gap-2">
+    <div className="flex flex-col items-center gap-3 select-none sm:gap-4">
+      <div className="grid grid-cols-3 gap-2 sm:gap-2.5">
         <span />
         <PadButton dir="up" onPress={() => onDir("up")} />
         <span />
@@ -26,7 +26,7 @@ export function DPad({
       </div>
       <button
         type="button"
-        className={`h-12 w-[220px] rounded-full text-sm font-semibold tracking-[0.2em] uppercase transition active:scale-95 ${
+        className={`h-12 w-[min(220px,80vw)] rounded-full text-sm font-semibold tracking-[0.2em] uppercase transition active:scale-95 ${
           dead
             ? "bg-gradient-to-r from-emerald-300 to-teal-300 text-slate-950 shadow-[0_0_28px_rgba(52,211,153,0.45)]"
             : "border border-white/10 bg-white/10 text-white/80 hover:bg-white/15"
@@ -44,9 +44,11 @@ function PadButton({ dir, onPress }: { dir: Dir; onPress: () => void }) {
     <button
       type="button"
       aria-label={dir}
-      className="flex h-16 w-16 items-center justify-center rounded-full border border-white/12 bg-[linear-gradient(180deg,rgba(255,255,255,0.14),rgba(255,255,255,0.04))] text-white shadow-[0_10px_24px_rgba(0,0,0,0.35),inset_0_1px_0_rgba(255,255,255,0.25)] active:translate-y-[1px] active:brightness-75"
+      className="flex h-[4.25rem] w-[4.25rem] items-center justify-center rounded-full border border-white/12 bg-[linear-gradient(180deg,rgba(255,255,255,0.14),rgba(255,255,255,0.04))] text-white shadow-[0_10px_24px_rgba(0,0,0,0.35),inset_0_1px_0_rgba(255,255,255,0.25)] touch-none select-none active:translate-y-[1px] active:brightness-75 sm:h-16 sm:w-16"
+      onContextMenu={(event) => event.preventDefault()}
       onPointerDown={(event) => {
         event.preventDefault();
+        event.currentTarget.setPointerCapture(event.pointerId);
         onPress();
       }}
     >

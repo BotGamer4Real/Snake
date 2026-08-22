@@ -11,7 +11,7 @@ export function AccountBar() {
 
   return (
     <>
-      <div className="mb-3 flex w-full max-w-[688px] justify-end">
+      <div className="flex shrink-0 justify-end">
         {loading ? (
           <span className="text-xs tracking-[0.18em] text-white/30 uppercase">
             Account

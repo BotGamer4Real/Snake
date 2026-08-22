@@ -2,7 +2,7 @@ import { PlayClient } from "@/components/PlayClient";
 
 export default function Home() {
   return (
-    <main className="relative flex flex-1 flex-col items-center justify-center px-4 py-8">
+    <main className="relative flex min-h-dvh flex-1 flex-col items-center md:justify-center">
       <PlayClient />
     </main>
   );

@@ -86,10 +86,10 @@ export function AuthModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 px-4 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-slate-950/70 px-4 pb-[max(1rem,env(safe-area-inset-bottom))] backdrop-blur-sm sm:items-center">
       <form
         onSubmit={onSubmit}
-        className="w-full max-w-sm rounded-3xl border border-white/12 bg-slate-950/90 p-6 shadow-2xl"
+        className="mb-0 max-h-[min(90dvh,40rem)] w-full max-w-sm overflow-y-auto rounded-3xl border border-white/12 bg-slate-950/90 p-6 shadow-2xl"
       >
         <div className="flex items-start justify-between gap-4">
           <div>
@@ -117,7 +117,7 @@ export function AuthModal({
               placeholder="Email"
               value={email}
               onChange={(event) => setEmail(event.target.value)}
-              className="h-11 rounded-xl border border-white/10 bg-white/5 px-3 text-sm text-white outline-none placeholder:text-white/30 focus:border-emerald-300/40"
+              className="h-12 rounded-xl border border-white/10 bg-white/5 px-3 text-base text-white outline-none placeholder:text-white/30 focus:border-emerald-300/40"
             />
           )}
           {mode === "signup" && !recovering && (
@@ -128,7 +128,7 @@ export function AuthModal({
               placeholder="Display name"
               value={displayName}
               onChange={(event) => setDisplayName(event.target.value)}
-              className="h-11 rounded-xl border border-white/10 bg-white/5 px-3 text-sm text-white outline-none placeholder:text-white/30 focus:border-emerald-300/40"
+              className="h-12 rounded-xl border border-white/10 bg-white/5 px-3 text-base text-white outline-none placeholder:text-white/30 focus:border-emerald-300/40"
             />
           )}
           {(mode !== "reset" || recovering) && (
@@ -139,7 +139,7 @@ export function AuthModal({
               placeholder="Password"
               value={password}
               onChange={(event) => setPassword(event.target.value)}
-              className="h-11 rounded-xl border border-white/10 bg-white/5 px-3 text-sm text-white outline-none placeholder:text-white/30 focus:border-emerald-300/40"
+              className="h-12 rounded-xl border border-white/10 bg-white/5 px-3 text-base text-white outline-none placeholder:text-white/30 focus:border-emerald-300/40"
             />
           )}
           {(mode === "signup" || recovering) && (
@@ -150,7 +150,7 @@ export function AuthModal({
               placeholder="Confirm password"
               value={confirm}
               onChange={(event) => setConfirm(event.target.value)}
-              className="h-11 rounded-xl border border-white/10 bg-white/5 px-3 text-sm text-white outline-none placeholder:text-white/30 focus:border-emerald-300/40"
+              className="h-12 rounded-xl border border-white/10 bg-white/5 px-3 text-base text-white outline-none placeholder:text-white/30 focus:border-emerald-300/40"
             />
           )}
         </div>

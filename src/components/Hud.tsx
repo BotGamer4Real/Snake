@@ -2,16 +2,16 @@ import type { HudPayload } from "@/game/events";
 
 export function Hud({ hud }: { hud: HudPayload }) {
   return (
-    <div className="mb-4 flex w-full max-w-[688px] items-end justify-between gap-3 px-1">
-      <div>
-        <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-cyan-100/45">
+    <div className="flex min-w-0 flex-1 items-end justify-between gap-2">
+      <div className="min-w-0">
+        <p className="hidden text-[11px] font-semibold uppercase tracking-[0.28em] text-cyan-100/45 sm:block">
           Classic rules
         </p>
-        <h1 className="bg-gradient-to-r from-emerald-200 via-white to-rose-200 bg-clip-text text-4xl font-semibold tracking-[0.18em] text-transparent">
+        <h1 className="bg-gradient-to-r from-emerald-200 via-white to-rose-200 bg-clip-text text-2xl font-semibold tracking-[0.18em] text-transparent sm:text-4xl">
           SNAKE
         </h1>
       </div>
-      <div className="flex gap-2">
+      <div className="flex gap-1.5 sm:gap-2">
         <Stat label="Score" value={hud.score} accent />
         <Stat label="Best" value={hud.highScore} />
       </div>
@@ -30,7 +30,7 @@ function Stat({
 }) {
   return (
     <div
-      className={`min-w-[76px] rounded-2xl border px-3 py-2 text-right shadow-[0_8px_30px_rgba(0,0,0,0.35)] backdrop-blur-md ${
+      className={`min-w-[64px] rounded-2xl border px-2.5 py-1.5 text-right shadow-[0_8px_30px_rgba(0,0,0,0.35)] backdrop-blur-md sm:min-w-[76px] sm:px-3 sm:py-2 ${
         accent
           ? "border-emerald-300/25 bg-emerald-400/10"
           : "border-white/10 bg-white/5"
@@ -39,7 +39,7 @@ function Stat({
       <div className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/45">
         {label}
       </div>
-      <div className="font-mono text-2xl font-semibold tabular-nums text-white">
+      <div className="font-mono text-xl font-semibold tabular-nums text-white sm:text-2xl">
         {value}
       </div>
     </div>
