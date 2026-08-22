@@ -46,7 +46,7 @@ export function SplashScreen({ onDone }: { onDone: () => void }) {
         onError={finish}
       />
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img>
+      <img
         src="/branding/botgamers-logo.jpg"
         alt="BotGamers"
         className="pointer-events-none absolute bottom-8 left-1/2 w-[min(220px,46vw)] -translate-x-1/2 rounded-lg opacity-90 shadow-[0_12px_40px_rgba(0,0,0,0.55)]"
