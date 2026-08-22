@@ -13,8 +13,8 @@ export const GAME_META: Record<
   },
   chase: {
     title: "Chase",
-    blurb: "Original maze chase. Coming next.",
-    playable: false,
+    blurb: "Eat the pips. Dodge the hunters. Boosts turn the chase.",
+    playable: true,
   },
   blocks: {
     title: "Blocks",

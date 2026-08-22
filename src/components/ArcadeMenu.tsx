@@ -45,7 +45,7 @@ export function ArcadeMenu({ onPlay }: Props) {
               action="Play"
               comingSoon={!meta.playable}
               best={meta.playable ? (highScores[id] ?? 0) : null}
-              accent={id === "blocks" ? "cyan" : "emerald"}
+              accent={id === "blocks" ? "cyan" : id === "chase" ? "rose" : "emerald"}
               onClick={meta.playable ? () => onPlay(id) : undefined}
             />
           );
@@ -69,13 +69,15 @@ function GameCard({
   action?: string;
   comingSoon?: boolean;
   best?: number | null;
-  accent?: "emerald" | "cyan";
+  accent?: "emerald" | "cyan" | "rose";
   onClick?: () => void;
 }) {
   const playableClass =
     accent === "cyan"
       ? "border-cyan-300/25 bg-cyan-400/10 active:scale-[0.99]"
-      : "border-emerald-300/25 bg-emerald-400/10 active:scale-[0.99]";
+      : accent === "rose"
+        ? "border-rose-300/25 bg-rose-400/10 active:scale-[0.99]"
+        : "border-emerald-300/25 bg-emerald-400/10 active:scale-[0.99]";
   const className = `w-full rounded-2xl border px-5 py-4 text-left shadow-[0_12px_40px_rgba(0,0,0,0.35)] ${
     comingSoon ? "border-white/8 bg-white/4 opacity-55" : playableClass
   }`;
@@ -88,7 +90,11 @@ function GameCard({
         </h2>
         <span
           className={`text-[11px] font-semibold tracking-[0.18em] uppercase ${
-            accent === "cyan" ? "text-cyan-200/80" : "text-emerald-200/80"
+            accent === "cyan"
+              ? "text-cyan-200/80"
+              : accent === "rose"
+                ? "text-rose-200/80"
+                : "text-emerald-200/80"
           }`}
         >
           {comingSoon ? "Soon" : action}

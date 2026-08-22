@@ -24,7 +24,16 @@ const BlocksCanvas = dynamic(() => import("@/components/BlocksCanvas"), {
   ),
 });
 
-type Screen = "splash" | "menu" | "snake" | "blocks";
+const ChaseCanvas = dynamic(() => import("@/components/ChaseCanvas"), {
+  ssr: false,
+  loading: () => (
+    <div className="flex aspect-[412/452] w-full max-w-[412px] items-center justify-center rounded-[28px] border border-white/10 bg-white/5 text-rose-200/70">
+      Loading maze…
+    </div>
+  ),
+});
+
+type Screen = "splash" | "menu" | "snake" | "blocks" | "chase";
 
 export function PlayClient() {
   const [screen, setScreen] = useState<Screen>("splash");
@@ -38,12 +47,15 @@ export function PlayClient() {
           onPlay={(gameId) => {
             if (gameId === "snake") setScreen("snake");
             if (gameId === "blocks") setScreen("blocks");
+            if (gameId === "chase") setScreen("chase");
           }}
         />
       ) : screen === "snake" ? (
         <GameCanvas onBack={() => setScreen("menu")} />
-      ) : (
+      ) : screen === "blocks" ? (
         <BlocksCanvas onBack={() => setScreen("menu")} />
+      ) : (
+        <ChaseCanvas onBack={() => setScreen("menu")} />
       )}
     </AuthProvider>
   );
