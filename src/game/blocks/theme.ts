@@ -21,6 +21,16 @@ export const PIECE_COLOR: Record<PieceId, number> = {
   L: 0xff9f2e,
 };
 
+export const PIECE_HEX: Record<PieceId, string> = {
+  I: "#2ee6e6",
+  O: "#f5d031",
+  T: "#c46bff",
+  S: "#3dde6a",
+  Z: "#ff4d5c",
+  J: "#3b82f6",
+  L: "#ff9f2e",
+};
+
 export function shade(color: number, amount: number): number {
   const r = Math.min(255, Math.max(0, ((color >> 16) & 255) + amount));
   const g = Math.min(255, Math.max(0, ((color >> 8) & 255) + amount));

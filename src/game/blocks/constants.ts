@@ -5,12 +5,10 @@ export const ROWS = VISIBLE_ROWS + HIDDEN_ROWS;
 export const SPAWN_X = 3;
 export const SPAWN_Y = 1;
 
-export const CELL = 24;
-export const PAD = 24;
-export const SIDE = 112;
-export const GAP = 16;
+export const CELL = 30;
+export const PAD = 20;
 
-export const GAME_WIDTH = PAD + COLS * CELL + GAP + SIDE + PAD;
+export const GAME_WIDTH = PAD + COLS * CELL + PAD;
 export const GAME_HEIGHT = PAD + VISIBLE_ROWS * CELL + PAD;
 
 export const START_DELAY_MS = 3000;

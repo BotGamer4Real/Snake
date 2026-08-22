@@ -18,7 +18,7 @@ const GameCanvas = dynamic(() => import("@/components/GameCanvas"), {
 const BlocksCanvas = dynamic(() => import("@/components/BlocksCanvas"), {
   ssr: false,
   loading: () => (
-    <div className="flex aspect-[410/528] w-full max-w-[464px] items-center justify-center rounded-[28px] border border-white/10 bg-white/5 text-cyan-200/70">
+    <div className="flex aspect-[340/640] w-full max-w-[340px] items-center justify-center rounded-[28px] border border-white/10 bg-white/5 text-cyan-200/70">
       Loading well…
     </div>
   ),

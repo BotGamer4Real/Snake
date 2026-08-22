@@ -1,3 +1,5 @@
+import type { PieceId } from "./engine";
+
 export const MOVE_START = "blocks-move-start";
 export const MOVE_END = "blocks-move-end";
 export const ROTATE_EVENT = "blocks-rotate";
@@ -16,4 +18,5 @@ export type BlocksHud = {
   countdown: number | null;
   lines: number;
   level: number;
+  next: PieceId;
 };

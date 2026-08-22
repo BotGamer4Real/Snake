@@ -27,7 +27,7 @@ export function BlocksPad({
       <button
         type="button"
         aria-label="rotate"
-        className="mb-1 flex h-[6.375rem] w-[6.375rem] items-center justify-center rounded-full border border-cyan-200/20 bg-[linear-gradient(180deg,rgba(46,230,230,0.22),rgba(255,255,255,0.04))] text-cyan-100 shadow-[0_10px_24px_rgba(0,0,0,0.35),inset_0_1px_0_rgba(255,255,255,0.25)] touch-none select-none active:translate-y-[1px] active:brightness-75 sm:h-16 sm:w-16"
+        className="mb-1 flex h-[4.85rem] w-[4.85rem] items-center justify-center rounded-full border border-cyan-200/20 bg-[linear-gradient(180deg,rgba(46,230,230,0.22),rgba(255,255,255,0.04))] text-cyan-100 shadow-[0_10px_24px_rgba(0,0,0,0.35),inset_0_1px_0_rgba(255,255,255,0.25)] touch-none select-none active:translate-y-[1px] active:brightness-75 sm:h-16 sm:w-16"
         onContextMenu={(event) => event.preventDefault()}
         onPointerDown={(event) => {
           event.preventDefault();
@@ -46,7 +46,7 @@ function PadButton({ label, onPress }: { label: string; onPress: () => void }) {
     <button
       type="button"
       aria-label={label}
-      className="flex h-[6.375rem] w-[6.375rem] items-center justify-center rounded-full border border-white/12 bg-[linear-gradient(180deg,rgba(255,255,255,0.14),rgba(255,255,255,0.04))] text-white shadow-[0_10px_24px_rgba(0,0,0,0.35),inset_0_1px_0_rgba(255,255,255,0.25)] touch-none select-none active:translate-y-[1px] active:brightness-75 sm:h-16 sm:w-16"
+      className="flex h-[4.85rem] w-[4.85rem] items-center justify-center rounded-full border border-white/12 bg-[linear-gradient(180deg,rgba(255,255,255,0.14),rgba(255,255,255,0.04))] text-white shadow-[0_10px_24px_rgba(0,0,0,0.35),inset_0_1px_0_rgba(255,255,255,0.25)] touch-none select-none active:translate-y-[1px] active:brightness-75 sm:h-16 sm:w-16"
       onContextMenu={(event) => event.preventDefault()}
       onPointerDown={(event) => {
         event.preventDefault();
@@ -72,7 +72,7 @@ function HoldButton({
     <button
       type="button"
       aria-label={label}
-      className="flex h-[6.375rem] w-[6.375rem] items-center justify-center rounded-full border border-white/12 bg-[linear-gradient(180deg,rgba(255,255,255,0.14),rgba(255,255,255,0.04))] text-white shadow-[0_10px_24px_rgba(0,0,0,0.35),inset_0_1px_0_rgba(255,255,255,0.25)] touch-none select-none active:translate-y-[1px] active:brightness-75 sm:h-16 sm:w-16"
+      className="flex h-[4.85rem] w-[4.85rem] items-center justify-center rounded-full border border-white/12 bg-[linear-gradient(180deg,rgba(255,255,255,0.14),rgba(255,255,255,0.04))] text-white shadow-[0_10px_24px_rgba(0,0,0,0.35),inset_0_1px_0_rgba(255,255,255,0.25)] touch-none select-none active:translate-y-[1px] active:brightness-75 sm:h-16 sm:w-16"
       onContextMenu={(event) => event.preventDefault()}
       onPointerDown={(event) => {
         event.preventDefault();
@@ -100,7 +100,7 @@ function Chevron({ dir }: { dir: string }) {
   return (
     <svg
       viewBox="0 0 24 24"
-      className={`h-11 w-11 sm:h-7 sm:w-7 ${rotate}`}
+      className={`h-8 w-8 sm:h-7 sm:w-7 ${rotate}`}
       fill="none"
       stroke="currentColor"
       strokeWidth="2.4"
@@ -116,7 +116,7 @@ function RotateIcon() {
   return (
     <svg
       viewBox="0 0 24 24"
-      className="h-11 w-11 sm:h-7 sm:w-7"
+      className="h-8 w-8 sm:h-7 sm:w-7"
       fill="none"
       stroke="currentColor"
       strokeWidth="2.4"

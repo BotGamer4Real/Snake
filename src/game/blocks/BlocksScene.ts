@@ -6,11 +6,9 @@ import {
   COLS,
   DAS_DELAY_MS,
   DAS_REPEAT_MS,
-  GAP,
   gravityMs,
   LINE_CLEAR_MS,
   PAD,
-  SIDE,
   SOFT_DROP_MS,
   START_DELAY_MS,
   VISIBLE_ROWS,
@@ -19,7 +17,6 @@ import {
   commitClear,
   createState,
   pieceCells,
-  previewCells,
   softDrop,
   tickGravity,
   tryMove,
@@ -53,9 +50,6 @@ export class BlocksScene extends Phaser.Scene {
   private dasReady = false;
   private dasDir: "left" | "right" | null = null;
   private scoredDeath = false;
-  private nextLabel!: Phaser.GameObjects.Text;
-  private levelLabel!: Phaser.GameObjects.Text;
-  private linesLabel!: Phaser.GameObjects.Text;
 
   constructor() {
     super("BlocksScene");
@@ -66,15 +60,6 @@ export class BlocksScene extends Phaser.Scene {
     this.resetRun(false);
     this.cameras.main.setBackgroundColor(COLOR.void);
     this.graphics = this.add.graphics();
-    const sideX = PAD + COLS * CELL + GAP;
-    const textStyle = {
-      fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
-      fontSize: "11px",
-      color: "#94a3b8",
-    };
-    this.nextLabel = this.add.text(sideX, PAD, "NEXT", textStyle);
-    this.levelLabel = this.add.text(sideX, PAD + 132, "", { ...textStyle, fontSize: "13px", color: "#e2e8f0" });
-    this.linesLabel = this.add.text(sideX, PAD + 168, "", { ...textStyle, fontSize: "13px", color: "#e2e8f0" });
 
     window.addEventListener("keydown", this.onWindowKeyDown, true);
     window.addEventListener("keyup", this.onWindowKeyUp, true);
@@ -297,6 +282,7 @@ export class BlocksScene extends Phaser.Scene {
         this.state.score > 0,
       lines: this.state.lines,
       level: this.state.level,
+      next: this.state.next,
     });
   }
 
@@ -308,21 +294,25 @@ export class BlocksScene extends Phaser.Scene {
     const boardY = PAD;
     const width = COLS * CELL;
     const height = VISIBLE_ROWS * CELL;
-    const sideX = PAD + width + GAP;
+
+    g.fillStyle(0x101827, 1);
+    g.fillRoundedRect(boardX - 8, boardY - 8, width + 16, height + 16, 16);
+    g.lineStyle(2, 0x67e8f9, 0.28);
+    g.strokeRoundedRect(boardX - 8, boardY - 8, width + 16, height + 16, 16);
 
     g.fillStyle(COLOR.board, 1);
-    g.fillRoundedRect(boardX, boardY, width, height, 10);
-    g.fillStyle(COLOR.panel, 1);
-    g.fillRoundedRect(sideX, boardY, SIDE, height, 10);
+    g.fillRoundedRect(boardX, boardY, width, height, 8);
+    g.fillStyle(0x050814, 0.35);
+    g.fillRoundedRect(boardX + 2, boardY + 2, width - 4, 18, 6);
 
-    g.fillStyle(COLOR.grid, 0.35);
+    g.fillStyle(COLOR.grid, 0.42);
     for (let y = 0; y < VISIBLE_ROWS; y += 1) {
       for (let x = 0; x < COLS; x += 1) {
-        g.fillRect(boardX + x * CELL, boardY + y * CELL, CELL - 1, CELL - 1);
+        g.fillRoundedRect(boardX + x * CELL + 1, boardY + y * CELL + 1, CELL - 2, CELL - 2, 3);
       }
     }
-    g.lineStyle(2, COLOR.well, 0.9);
-    g.strokeRoundedRect(boardX + 1, boardY + 1, width - 2, height - 2, 10);
+    g.lineStyle(2, COLOR.well, 0.95);
+    g.strokeRoundedRect(boardX + 0.5, boardY + 0.5, width - 1, height - 1, 8);
 
     for (let y = 0; y < this.state.board.length; y += 1) {
       const row = this.state.board[y]!;
@@ -339,26 +329,6 @@ export class BlocksScene extends Phaser.Scene {
         this.drawBlock(g, cell.x, visibleY(cell.y), this.state.current.id, false);
       }
     }
-
-    this.drawPreview(g, sideX, this.state.next);
-    this.levelLabel.setText(`LEVEL  ${this.state.level}`);
-    this.linesLabel.setText(`LINES  ${this.state.lines}`);
-  }
-
-  private drawPreview(g: Phaser.GameObjects.Graphics, sideX: number, id: PieceId): void {
-    const originX = sideX + 18;
-    const originY = PAD + 28;
-    const size = 18;
-    for (const cell of previewCells(id)) {
-      this.paintCell(
-        g,
-        originX + cell.x * size,
-        originY + cell.y * size,
-        size - 2,
-        PIECE_COLOR[id],
-        false,
-      );
-    }
   }
 
   private drawBlock(
@@ -371,7 +341,7 @@ export class BlocksScene extends Phaser.Scene {
     if (y < 0 || y >= VISIBLE_ROWS || x < 0 || x >= COLS) return;
     const px = PAD + x * CELL + 1;
     const py = PAD + y * CELL + 1;
-    this.paintCell(g, px, py, CELL - 2, PIECE_COLOR[id], flash);
+    this.paintCell(g, px, py, CELL - 3, PIECE_COLOR[id], flash);
   }
 
   private paintCell(
@@ -384,13 +354,13 @@ export class BlocksScene extends Phaser.Scene {
   ): void {
     const fill = flash ? COLOR.flash : color;
     g.fillStyle(fill, 1);
-    g.fillRoundedRect(px, py, size, size, 3);
-    g.fillStyle(shade(fill, 46), 0.9);
-    g.fillRect(px + 1, py + 1, size - 2, 3);
-    g.fillStyle(shade(fill, -48), 0.55);
-    g.fillRect(px + 1, py + size - 4, size - 2, 3);
-    g.fillStyle(0xffffff, flash ? 0.55 : 0.18);
-    g.fillRect(px + 2, py + 2, Math.max(3, size * 0.28), 2);
+    g.fillRoundedRect(px, py, size, size, 4);
+    g.fillStyle(shade(fill, 52), 0.95);
+    g.fillRect(px + 2, py + 2, size - 4, 4);
+    g.fillStyle(shade(fill, -56), 0.55);
+    g.fillRect(px + 2, py + size - 6, size - 4, 4);
+    g.fillStyle(0xffffff, flash ? 0.6 : 0.22);
+    g.fillRect(px + 3, py + 3, Math.max(4, size * 0.3), 3);
   }
 }
 
