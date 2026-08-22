@@ -1,15 +1,19 @@
 "use client";
 
 import { AccountBar } from "@/components/AccountBar";
+import { useAuth } from "@/components/AuthProvider";
+import { GAME_IDS, GAME_META } from "@/lib/games";
 
 type Props = {
   onPlaySnake: () => void;
 };
 
 export function ArcadeMenu({ onPlaySnake }: Props) {
+  const { highScores } = useAuth();
+
   return (
     <div className="flex min-h-dvh w-full max-w-[720px] flex-col px-4 pt-[max(0.75rem,env(safe-area-inset-top))] pb-[max(1rem,env(safe-area-inset-bottom))]">
-      <div className="flex items-start justify-between gap-3">
+      <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-white/40">
             BotGamers Arcade
@@ -31,22 +35,20 @@ export function ArcadeMenu({ onPlaySnake }: Props) {
       </div>
 
       <div className="mt-8 grid flex-1 content-start gap-3">
-        <GameCard
-          title="Snake"
-          blurb="Classic 1997-style rules. Eat. Don't hit the walls."
-          action="Play"
-          onClick={onPlaySnake}
-        />
-        <GameCard
-          title="Chase"
-          blurb="Original maze chase. Coming next."
-          comingSoon
-        />
-        <GameCard
-          title="Stack"
-          blurb="Original falling blocks. Coming next."
-          comingSoon
-        />
+        {GAME_IDS.map((id) => {
+          const meta = GAME_META[id];
+          return (
+            <GameCard
+              key={id}
+              title={meta.title}
+              blurb={meta.blurb}
+              action="Play"
+              comingSoon={!meta.playable}
+              best={meta.playable ? (highScores[id] ?? 0) : null}
+              onClick={meta.playable ? onPlaySnake : undefined}
+            />
+          );
+        })}
       </div>
     </div>
   );
@@ -57,12 +59,14 @@ function GameCard({
   blurb,
   action,
   comingSoon = false,
+  best,
   onClick,
 }: {
   title: string;
   blurb: string;
   action?: string;
   comingSoon?: boolean;
+  best?: number | null;
   onClick?: () => void;
 }) {
   const className = `w-full rounded-2xl border px-5 py-4 text-left shadow-[0_12px_40px_rgba(0,0,0,0.35)] ${
@@ -82,6 +86,11 @@ function GameCard({
         </span>
       </div>
       <p className="mt-1 text-sm text-white/55">{blurb}</p>
+      {best != null && (
+        <p className="mt-2 font-mono text-sm text-white/70">
+          Best {best}
+        </p>
+      )}
     </>
   );
 

@@ -20,13 +20,11 @@ type Screen = "splash" | "menu" | "snake";
 export function PlayClient() {
   const [screen, setScreen] = useState<Screen>("splash");
 
-  if (screen === "splash") {
-    return <SplashScreen onDone={() => setScreen("menu")} />;
-  }
-
   return (
     <AuthProvider>
-      {screen === "menu" ? (
+      {screen === "splash" ? (
+        <SplashScreen onDone={() => setScreen("menu")} />
+      ) : screen === "menu" ? (
         <ArcadeMenu onPlaySnake={() => setScreen("snake")} />
       ) : (
         <GameCanvas onBack={() => setScreen("menu")} />

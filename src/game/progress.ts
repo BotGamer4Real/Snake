@@ -1,14 +1,41 @@
-import { HIGH_SCORE_KEY } from "./constants";
+import { emptyHighScores, type GameId } from "@/lib/games";
 
-export function loadHighScore(): number {
-  if (typeof window === "undefined") return 0;
-  const raw = window.localStorage.getItem(HIGH_SCORE_KEY);
-  const value = raw ? Number.parseInt(raw, 10) : 0;
-  return Number.isFinite(value) && value > 0 ? value : 0;
+const SCORE_KEY_PREFIX = "arcade.highScore.";
+const LEGACY_SNAKE_KEY = "snake.highScore";
+
+function scoreKey(gameId: GameId): string {
+  return `${SCORE_KEY_PREFIX}${gameId}`;
 }
 
-export function saveHighScore(score: number): number {
-  const next = Math.max(loadHighScore(), score);
-  window.localStorage.setItem(HIGH_SCORE_KEY, String(next));
+export function loadHighScore(gameId: GameId): number {
+  if (typeof window === "undefined") return 0;
+  const raw = window.localStorage.getItem(scoreKey(gameId));
+  if (raw == null && gameId === "snake") {
+    const legacy = window.localStorage.getItem(LEGACY_SNAKE_KEY);
+    const migrated = parseScore(legacy);
+    if (migrated > 0) {
+      window.localStorage.setItem(scoreKey("snake"), String(migrated));
+    }
+    return migrated;
+  }
+  return parseScore(raw);
+}
+
+export function saveHighScore(gameId: GameId, score: number): number {
+  const next = Math.max(loadHighScore(gameId), score);
+  window.localStorage.setItem(scoreKey(gameId), String(next));
   return next;
+}
+
+export function loadAllHighScores(): Record<GameId, number> {
+  const scores = emptyHighScores();
+  for (const gameId of Object.keys(scores) as GameId[]) {
+    scores[gameId] = loadHighScore(gameId);
+  }
+  return scores;
+}
+
+function parseScore(raw: string | null): number {
+  const value = raw ? Number.parseInt(raw, 10) : 0;
+  return Number.isFinite(value) && value > 0 ? value : 0;
 }

@@ -3,17 +3,19 @@
 import { useState } from "react";
 import { useAuth } from "@/components/AuthProvider";
 
-type Mode = "signin" | "signup" | "reset";
+export type AuthMode = "signin" | "signup" | "reset";
 
 export function AuthModal({
   open,
   onClose,
+  initialMode = "signin",
 }: {
   open: boolean;
   onClose: () => void;
+  initialMode?: AuthMode;
 }) {
   const { signIn, signUp, sendReset, resendConfirmation, updatePassword, recovering } = useAuth();
-  const [mode, setMode] = useState<Mode>("signin");
+  const [mode, setMode] = useState<AuthMode>(initialMode);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");

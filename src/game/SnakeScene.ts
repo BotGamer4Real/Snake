@@ -40,7 +40,7 @@ export class SnakeScene extends Phaser.Scene {
   }
 
   create(): void {
-    this.highScore = loadHighScore();
+    this.highScore = loadHighScore("snake");
     this.resetRun(false);
     this.cameras.main.setBackgroundColor(COLOR.void);
     this.glow = this.add.graphics();
@@ -117,10 +117,10 @@ export class SnakeScene extends Phaser.Scene {
     }
 
     if (this.state.status === "dead") {
-      this.highScore = saveHighScore(this.state.score);
+      this.highScore = saveHighScore("snake", this.state.score);
       this.deathFlash = 280;
       this.cameras.main.shake(160, 0.006);
-      void persistHighScore(this.state.score).then((merged) => {
+      void persistHighScore("snake", this.state.score).then((merged) => {
         this.highScore = merged;
         this.publishHud();
       });

@@ -14,4 +14,3 @@ export function tickMs(score: number): number {
   return Math.max(END_TICK_MS, START_TICK_MS - step * TICK_STEP_MS);
 }
 
-export const HIGH_SCORE_KEY = "snake.highScore";

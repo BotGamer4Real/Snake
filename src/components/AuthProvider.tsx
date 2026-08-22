@@ -9,13 +9,20 @@ import {
   useState,
 } from "react";
 import type { Session, User } from "@supabase/supabase-js";
-import { mergeHighScoreWithCloud, type Profile } from "@/lib/profile";
+import { isGameId, type GameId } from "@/lib/games";
+import {
+  HIGH_SCORE_SYNC_EVENT,
+  mergeAllHighScores,
+  type HighScoreSyncDetail,
+  type Profile,
+} from "@/lib/profile";
+import { loadAllHighScores } from "@/game/progress";
 import { authRedirectUrl, getSupabase } from "@/lib/supabase";
 
 type AuthContextValue = {
   user: User | null;
   profile: Profile | null;
-  highScore: number | null;
+  highScores: Record<GameId, number>;
   loading: boolean;
   recovering: boolean;
   signIn: (email: string, password: string) => Promise<string | null>;
@@ -28,7 +35,7 @@ type AuthContextValue = {
   sendReset: (email: string) => Promise<string | null>;
   resendConfirmation: (email: string) => Promise<string | null>;
   updatePassword: (password: string) => Promise<string | null>;
-  refreshProfile: () => Promise<number | null>;
+  refreshProfile: () => Promise<Record<GameId, number>>;
 };
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -36,7 +43,7 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
-  const [highScore, setHighScore] = useState<number | null>(null);
+  const [highScores, setHighScores] = useState<Record<GameId, number>>(loadAllHighScores);
   const [loading, setLoading] = useState(true);
   const [recovering, setRecovering] = useState(false);
 
@@ -44,15 +51,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(session?.user ?? null);
     if (!session) {
       setProfile(null);
-      setHighScore(null);
+      setHighScores(loadAllHighScores());
       return;
     }
-    const merged = await mergeHighScoreWithCloud();
-    setHighScore(merged);
+    const merged = await mergeAllHighScores();
+    setHighScores(merged);
     const supabase = getSupabase();
     const { data } = await supabase
       .from("profiles")
-      .select("id, display_name, high_score")
+      .select("id, display_name")
       .eq("id", session.user.id)
       .maybeSingle();
     setProfile(data);
@@ -82,10 +89,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
     window.addEventListener("online", onOnline);
 
+    const onScoreSync = (event: Event) => {
+      const detail = (event as CustomEvent<HighScoreSyncDetail>).detail;
+      if (!detail || !isGameId(detail.gameId)) return;
+      setHighScores((prev) => ({
+        ...prev,
+        [detail.gameId]: Math.max(prev[detail.gameId] ?? 0, detail.highScore),
+      }));
+    };
+    window.addEventListener(HIGH_SCORE_SYNC_EVENT, onScoreSync);
+
     return () => {
       cancelled = true;
       listener.subscription.unsubscribe();
       window.removeEventListener("online", onOnline);
+      window.removeEventListener(HIGH_SCORE_SYNC_EVENT, onScoreSync);
     };
   }, [hydrate]);
 
@@ -141,8 +159,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const refreshProfile = useCallback(async () => {
-    const merged = await mergeHighScoreWithCloud();
-    setHighScore(merged);
+    const merged = await mergeAllHighScores();
+    setHighScores(merged);
     return merged;
   }, []);
 
@@ -150,7 +168,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     () => ({
       user,
       profile,
-      highScore,
+      highScores,
       loading,
       recovering,
       signIn,
@@ -164,7 +182,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     [
       user,
       profile,
-      highScore,
+      highScores,
       loading,
       recovering,
       signIn,

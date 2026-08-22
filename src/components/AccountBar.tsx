@@ -1,13 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import { AuthModal } from "@/components/AuthModal";
+import { AuthModal, type AuthMode } from "@/components/AuthModal";
 import { useAuth } from "@/components/AuthProvider";
 
 export function AccountBar() {
   const { user, profile, loading, recovering, signOut } = useAuth();
   const [open, setOpen] = useState(false);
+  const [mode, setMode] = useState<AuthMode>("signin");
   const modalOpen = open || recovering;
+
+  function openMode(next: AuthMode) {
+    setMode(next);
+    setOpen(true);
+  }
 
   return (
     <>
@@ -30,16 +36,32 @@ export function AccountBar() {
             </button>
           </div>
         ) : (
-          <button
-            type="button"
-            onClick={() => setOpen(true)}
-            className="rounded-full border border-emerald-300/30 bg-emerald-300/10 px-4 py-2 text-xs font-semibold tracking-[0.18em] text-emerald-100 uppercase hover:bg-emerald-300/20"
-          >
-            Sign in
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => openMode("signin")}
+              className="rounded-full border border-emerald-300/30 bg-emerald-300/10 px-4 py-2 text-xs font-semibold tracking-[0.18em] text-emerald-100 uppercase hover:bg-emerald-300/20"
+            >
+              Sign in
+            </button>
+            <button
+              type="button"
+              onClick={() => openMode("signup")}
+              className="rounded-full border border-white/15 bg-white/5 px-4 py-2 text-xs font-semibold tracking-[0.18em] text-white/80 uppercase hover:bg-white/10"
+            >
+              Sign up
+            </button>
+          </div>
         )}
       </div>
-      <AuthModal open={modalOpen} onClose={() => { if (!recovering) setOpen(false); }} />
+      <AuthModal
+        key={modalOpen ? `${mode}-${recovering ? "recover" : "auth"}` : "closed"}
+        open={modalOpen}
+        initialMode={mode}
+        onClose={() => {
+          if (!recovering) setOpen(false);
+        }}
+      />
     </>
   );
 }

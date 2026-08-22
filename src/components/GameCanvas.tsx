@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { AccountBar } from "@/components/AccountBar";
 import { DPad } from "@/components/DPad";
 import { Hud } from "@/components/Hud";
 import { useAuth } from "@/components/AuthProvider";
@@ -37,12 +36,13 @@ export default function GameCanvas({ onBack }: { onBack: () => void }) {
   const gameRef = useRef<GameHandle | null>(null);
   const swipeRef = useRef<{ id: number; x: number; y: number } | null>(null);
   const [hud, setHud] = useState<HudPayload>(idleHud);
-  const { highScore: cloudHighScore } = useAuth();
-  const cloudHighScoreRef = useRef(cloudHighScore);
+  const { highScores } = useAuth();
+  const snakeBest = highScores.snake;
+  const cloudHighScoreRef = useRef(snakeBest);
 
   useEffect(() => {
-    cloudHighScoreRef.current = cloudHighScore;
-  }, [cloudHighScore]);
+    cloudHighScoreRef.current = snakeBest;
+  }, [snakeBest]);
 
   useEffect(() => {
     const parent = parentRef.current;
@@ -79,9 +79,8 @@ export default function GameCanvas({ onBack }: { onBack: () => void }) {
   }, []);
 
   useEffect(() => {
-    if (cloudHighScore == null) return;
-    gameRef.current?.events.emit(HIGH_SCORE_SET, cloudHighScore);
-  }, [cloudHighScore]);
+    gameRef.current?.events.emit(HIGH_SCORE_SET, snakeBest);
+  }, [snakeBest]);
 
   const emitDir = (dir: Dir) => {
     gameRef.current?.events.emit(DIR_EVENT, dir);
@@ -113,16 +112,13 @@ export default function GameCanvas({ onBack }: { onBack: () => void }) {
     <div className="flex h-dvh max-h-dvh w-full max-w-[720px] flex-col overflow-hidden px-3 pt-[max(0.5rem,env(safe-area-inset-top))] pb-[max(0.5rem,env(safe-area-inset-bottom))] sm:h-auto sm:max-h-none sm:px-4 sm:py-6">
       <div className="flex shrink-0 items-start justify-between gap-2">
         <Hud hud={hud} />
-        <div className="flex shrink-0 flex-col items-end gap-2">
-          <button
-            type="button"
-            onClick={onBack}
-            className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-[11px] font-semibold tracking-[0.16em] text-white/70 uppercase hover:bg-white/10"
-          >
-            Arcade
-          </button>
-          <AccountBar />
-        </div>
+        <button
+          type="button"
+          onClick={onBack}
+          className="shrink-0 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-[11px] font-semibold tracking-[0.16em] text-white/70 uppercase hover:bg-white/10"
+        >
+          Main menu
+        </button>
       </div>
       <div className="flex min-h-0 flex-1 items-center justify-center py-2 sm:py-4">
         <div
@@ -182,7 +178,7 @@ export default function GameCanvas({ onBack }: { onBack: () => void }) {
                     onBack();
                   }}
                 >
-                  Arcade
+                  Main menu
                 </button>
               </div>
             </div>
