@@ -25,9 +25,12 @@ const GRAVITY_FRAMES = [
   2, 2, 2, 2, 2, 2, 1,
 ];
 
+/** Pieces fall 20% slower than the NES table at every level. */
+const GRAVITY_SCALE = 1.2;
+
 export function gravityMs(level: number): number {
   const frames = level >= 29 ? 1 : (GRAVITY_FRAMES[level] ?? 1);
-  return (frames / 60) * 1000;
+  return (frames / 60) * 1000 * GRAVITY_SCALE;
 }
 
 export const LINE_POINTS = [0, 40, 100, 300, 1200] as const;
