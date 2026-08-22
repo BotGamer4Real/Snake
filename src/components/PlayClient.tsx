@@ -1,7 +1,9 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import { useState } from "react";
 import { AuthProvider } from "@/components/AuthProvider";
+import { SplashScreen } from "@/components/SplashScreen";
 
 const GameCanvas = dynamic(() => import("@/components/GameCanvas"), {
   ssr: false,
@@ -13,6 +15,12 @@ const GameCanvas = dynamic(() => import("@/components/GameCanvas"), {
 });
 
 export function PlayClient() {
+  const [introDone, setIntroDone] = useState(false);
+
+  if (!introDone) {
+    return <SplashScreen onDone={() => setIntroDone(true)} />;
+  }
+
   return (
     <AuthProvider>
       <GameCanvas />
