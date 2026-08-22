@@ -4,9 +4,9 @@ export const dynamic = "force-static";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Classic Snake",
-    short_name: "Snake",
-    description: "Classic 1997-style Snake.",
+    name: "BotGamers Arcade",
+    short_name: "BotGamers",
+    description: "Play Snake now. More original games coming next.",
     start_url: "/",
     display: "standalone",
     background_color: "#070b14",

@@ -2,6 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { useState } from "react";
+import { ArcadeMenu } from "@/components/ArcadeMenu";
 import { AuthProvider } from "@/components/AuthProvider";
 import { SplashScreen } from "@/components/SplashScreen";
 
@@ -14,16 +15,22 @@ const GameCanvas = dynamic(() => import("@/components/GameCanvas"), {
   ),
 });
 
-export function PlayClient() {
-  const [introDone, setIntroDone] = useState(false);
+type Screen = "splash" | "menu" | "snake";
 
-  if (!introDone) {
-    return <SplashScreen onDone={() => setIntroDone(true)} />;
+export function PlayClient() {
+  const [screen, setScreen] = useState<Screen>("splash");
+
+  if (screen === "splash") {
+    return <SplashScreen onDone={() => setScreen("menu")} />;
   }
 
   return (
     <AuthProvider>
-      <GameCanvas />
+      {screen === "menu" ? (
+        <ArcadeMenu onPlaySnake={() => setScreen("snake")} />
+      ) : (
+        <GameCanvas onBack={() => setScreen("menu")} />
+      )}
     </AuthProvider>
   );
 }

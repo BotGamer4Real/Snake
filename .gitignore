@@ -39,6 +39,7 @@ yarn-error.log*
 next-env.d.ts
 
 # android / capacitor
+android/.idea/
 android/app/build/
 android/build/
 android/.gradle/

@@ -22,7 +22,7 @@ const idleHud: HudPayload = {
   countdown: 3,
 };
 
-export default function GameCanvas() {
+export default function GameCanvas({ onBack }: { onBack: () => void }) {
   type GameHandle = {
     events: {
       emit: (event: string, ...args: unknown[]) => void;
@@ -113,7 +113,16 @@ export default function GameCanvas() {
     <div className="flex h-dvh max-h-dvh w-full max-w-[720px] flex-col overflow-hidden px-3 pt-[max(0.5rem,env(safe-area-inset-top))] pb-[max(0.5rem,env(safe-area-inset-bottom))] sm:h-auto sm:max-h-none sm:px-4 sm:py-6">
       <div className="flex shrink-0 items-start justify-between gap-2">
         <Hud hud={hud} />
-        <AccountBar />
+        <div className="flex shrink-0 flex-col items-end gap-2">
+          <button
+            type="button"
+            onClick={onBack}
+            className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-[11px] font-semibold tracking-[0.16em] text-white/70 uppercase hover:bg-white/10"
+          >
+            Arcade
+          </button>
+          <AccountBar />
+        </div>
       </div>
       <div className="flex min-h-0 flex-1 items-center justify-center py-2 sm:py-4">
         <div
@@ -158,9 +167,22 @@ export default function GameCanvas() {
                 <button
                   type="button"
                   className="mt-6 h-12 w-full rounded-full bg-gradient-to-r from-emerald-300 to-teal-300 text-sm font-semibold tracking-[0.18em] text-slate-950 uppercase"
-                  onClick={emitRestart}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    emitRestart();
+                  }}
                 >
                   Play again
+                </button>
+                <button
+                  type="button"
+                  className="mt-3 h-11 w-full rounded-full border border-white/15 text-xs font-semibold tracking-[0.18em] text-white/80 uppercase"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    onBack();
+                  }}
+                >
+                  Arcade
                 </button>
               </div>
             </div>

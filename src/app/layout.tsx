@@ -13,12 +13,12 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Classic Snake",
-  description: "Classic 1997-style Snake. Original Nokia Snake rules.",
+  title: "BotGamers Arcade",
+  description: "BotGamers Arcade. Play Snake now. More original games coming next.",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "Snake",
+    title: "BotGamers",
   },
   formatDetection: {
     telephone: false,
