@@ -12,7 +12,6 @@ import {
   DELTA,
   exits,
   findTiles,
-  isDoor,
   isHouse,
   isHunterWalkable,
   isPlayerWalkable,
@@ -64,8 +63,9 @@ const SCATTER: Record<HunterId, { x: number; y: number }> = {
 const startTile = findTiles("S")[0] ?? { x: 9, y: 17 };
 const houseTiles = findTiles("H");
 const doorTiles = findTiles("D");
-const houseHome = houseTiles[1] ?? houseTiles[0] ?? { x: 9, y: 9 };
-const doorTile = doorTiles[1] ?? doorTiles[0] ?? { x: 9, y: 10 };
+const houseHome = houseTiles[1] ?? houseTiles[0] ?? { x: 9, y: 10 };
+const doorTile = doorTiles[1] ?? doorTiles[0] ?? { x: 9, y: 9 };
+const outsideDoor = { x: doorTile.x, y: doorTile.y - 1 };
 
 function cloneGrid(kind: "." | "*"): boolean[][] {
   return MAZE.map((row) => row.map((tile) => tile === kind));
@@ -82,15 +82,18 @@ function countPips(pips: boolean[][], boosts: boolean[][]): number {
 }
 
 function makeHunters(): Hunter[] {
-  return HUNTER_IDS.map((id, index) => ({
-    id,
-    x: houseTiles[index % houseTiles.length]?.x ?? houseHome.x,
-    y: houseTiles[index % houseTiles.length]?.y ?? houseHome.y,
-    dir: "up" as Dir,
-    mode: "scatter" as const,
-    frightMs: 0,
-    released: index === 0,
-  }));
+  return HUNTER_IDS.map((id, index) => {
+    const seat = houseTiles[index] ?? houseHome;
+    return {
+      id,
+      x: seat.x,
+      y: seat.y,
+      dir: "up" as Dir,
+      mode: "scatter" as const,
+      frightMs: 0,
+      released: index === 0,
+    };
+  });
 }
 
 export function createState(): ChaseState {
@@ -156,11 +159,37 @@ function ahead(player: Actor, tiles: number): { x: number; y: number } {
   return wrap(player.x + d.x * tiles, player.y + d.y * tiles);
 }
 
+function inPen(x: number, y: number): boolean {
+  return isHouse(x, y);
+}
+
+function hunterCanEnter(hunter: Hunter, x: number, y: number): boolean {
+  if (!isHunterWalkable(x, y)) return false;
+  if (hunter.mode === "eaten") return true;
+  if (!hunter.released) return inPen(x, y);
+  if (!inPen(hunter.x, hunter.y) && inPen(x, y)) return false;
+  return true;
+}
+
+function occupiedByOther(state: ChaseState, hunter: Hunter, x: number, y: number): boolean {
+  return state.hunters.some(
+    (other) =>
+      other.id !== hunter.id &&
+      other.mode !== "eaten" &&
+      other.x === x &&
+      other.y === y,
+  );
+}
+
 function targetFor(state: ChaseState, hunter: Hunter): { x: number; y: number } {
   if (hunter.mode === "eaten") return houseHome;
-  if (!hunter.released) return doorTile;
+  if (!hunter.released) {
+    const seat = houseTiles[HUNTER_IDS.indexOf(hunter.id)] ?? houseHome;
+    return seat;
+  }
+  if (inPen(hunter.x, hunter.y)) return outsideDoor;
   if (hunter.mode === "fright") {
-    return { x: hunter.x + 1, y: hunter.y };
+    return SCATTER[hunter.id];
   }
   if (hunter.mode === "scatter") return SCATTER[hunter.id];
   const ember = state.hunters[0]!;
@@ -168,31 +197,42 @@ function targetFor(state: ChaseState, hunter: Hunter): { x: number; y: number } 
   if (hunter.id === "drift") return ahead(state.player, 4);
   if (hunter.id === "coil") {
     const pivot = ahead(state.player, 2);
-    return wrap(pivot.x * 2 - ember.x, pivot.y * 2 - ember.y);
+    return {
+      x: Math.max(1, Math.min(COLS - 2, pivot.x * 2 - ember.x)),
+      y: Math.max(1, Math.min(ROWS - 2, pivot.y * 2 - ember.y)),
+    };
   }
   const shy = dist2(hunter, state.player) < 64;
   return shy ? SCATTER.dusk : { x: state.player.x, y: state.player.y };
 }
 
 function pickHunterDir(state: ChaseState, hunter: Hunter): Dir {
-  const walkable = isHunterWalkable;
+  const walkable = (x: number, y: number) => hunterCanEnter(hunter, x, y);
   let options = exits(hunter.x, hunter.y, walkable);
   if (options.length === 0) return hunter.dir;
-  if (hunter.mode !== "eaten" && hunter.released) {
+  const outside = hunter.released && !inPen(hunter.x, hunter.y);
+  if (hunter.mode !== "eaten" && outside) {
     const reverse = OPPOSITE[hunter.dir];
     const filtered = options.filter((dir) => dir !== reverse);
     if (filtered.length) options = filtered;
   }
-  if (hunter.mode === "fright" && hunter.released) {
-    return options[Math.floor(Math.random() * options.length)]!;
-  }
   const goal = targetFor(state, hunter);
+  if (hunter.mode === "fright" && outside) {
+    const open = options.filter((dir) => {
+      const d = DELTA[dir];
+      const n = wrap(hunter.x + d.x, hunter.y + d.y);
+      return !occupiedByOther(state, hunter, n.x, n.y);
+    });
+    const pool = open.length ? open : options;
+    return pool[Math.floor(Math.random() * pool.length)]!;
+  }
   let best = options[0]!;
   let bestScore = Infinity;
   for (const dir of options) {
     const d = DELTA[dir];
     const n = wrap(hunter.x + d.x, hunter.y + d.y);
-    const score = dist2(n, goal);
+    let score = dist2(n, goal);
+    if (occupiedByOther(state, hunter, n.x, n.y)) score += 800;
     if (score < bestScore) {
       bestScore = score;
       best = dir;
@@ -267,14 +307,14 @@ export function advanceWave(state: ChaseState, dt: number): void {
 export function moveHunter(state: ChaseState, hunter: Hunter): void {
   if (state.status !== "playing") return;
   hunter.dir = pickHunterDir(state, hunter);
-  if (!hunter.released && !isHouse(hunter.x, hunter.y) && !isDoor(hunter.x, hunter.y)) {
-    hunter.released = true;
-  }
   const d = DELTA[hunter.dir];
   const n = wrap(hunter.x + d.x, hunter.y + d.y);
-  if (isHunterWalkable(n.x, n.y)) {
+  if (hunterCanEnter(hunter, n.x, n.y)) {
     hunter.x = n.x;
     hunter.y = n.y;
+  }
+  if (hunter.released && !inPen(hunter.x, hunter.y)) {
+    hunter.released = true;
   }
   resolveHits(state);
 }
