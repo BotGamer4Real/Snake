@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { LivesMeter } from "@/components/LivesMeter";
 import { SwarmPad } from "@/components/SwarmPad";
 import { useAuth } from "@/components/AuthProvider";
 import { GAME_HEIGHT, GAME_WIDTH } from "@/game/swarm/constants";
@@ -92,13 +93,16 @@ export default function SwarmCanvas({ onBack }: { onBack: () => void }) {
   return (
     <div className="flex h-dvh max-h-dvh w-full max-w-[760px] flex-col overflow-hidden px-3 pt-[max(0.5rem,env(safe-area-inset-top))] pb-[max(0.5rem,env(safe-area-inset-bottom))] sm:h-auto sm:max-h-none sm:px-4 sm:py-6">
       <div className="flex shrink-0 items-start justify-between gap-2">
-        <div className="min-w-0 flex-1">
-          <p className="hidden text-[11px] font-semibold uppercase tracking-[0.28em] text-amber-200/45 sm:block">
-            Hold the line
-          </p>
-          <h1 className="bg-gradient-to-r from-amber-200 via-white to-violet-200 bg-clip-text text-2xl font-semibold tracking-[0.18em] text-transparent sm:text-4xl">
-            SWARM
-          </h1>
+        <div className="flex min-w-0 flex-1 items-center gap-3">
+          <div className="min-w-0">
+            <p className="hidden text-[11px] font-semibold uppercase tracking-[0.28em] text-amber-200/45 sm:block">
+              Hold the line
+            </p>
+            <h1 className="bg-gradient-to-r from-amber-200 via-white to-violet-200 bg-clip-text text-2xl font-semibold tracking-[0.18em] text-transparent sm:text-4xl">
+              SWARM
+            </h1>
+          </div>
+          <LivesMeter lives={hud.lives} />
         </div>
         <div className="flex items-start gap-1.5 sm:gap-2">
           <Stat label="Score" value={hud.score} accent />
@@ -113,9 +117,6 @@ export default function SwarmCanvas({ onBack }: { onBack: () => void }) {
           </button>
         </div>
       </div>
-      <p className="mt-1 text-[11px] tracking-[0.16em] text-white/40 uppercase">
-        Lives {hud.lives}
-      </p>
       <div className="flex min-h-0 flex-1 items-center justify-center py-2 sm:py-4">
         <div
           className="relative max-h-full min-h-0 min-w-0"
