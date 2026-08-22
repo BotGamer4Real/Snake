@@ -1,4 +1,4 @@
-export const GAME_IDS = ["snake", "chase", "blocks", "swarm"] as const;
+export const GAME_IDS = ["snake", "chase", "blocks", "swarm", "brick"] as const;
 
 export type GameId = (typeof GAME_IDS)[number];
 
@@ -26,6 +26,11 @@ export const GAME_META: Record<
     blurb: "Classic gallery shooter. Waves from above. Don't let them land.",
     playable: true,
   },
+  brick: {
+    title: "Brick",
+    blurb: "Classic paddle and bricks. Bounce. Clear the wall. Don't miss.",
+    playable: true,
+  },
 };
 
 export function isGameId(value: string): value is GameId {
@@ -33,5 +38,5 @@ export function isGameId(value: string): value is GameId {
 }
 
 export function emptyHighScores(): Record<GameId, number> {
-  return { snake: 0, chase: 0, blocks: 0, swarm: 0 };
+  return { snake: 0, chase: 0, blocks: 0, swarm: 0, brick: 0 };
 }

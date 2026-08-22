@@ -46,7 +46,15 @@ export function ArcadeMenu({ onPlay }: Props) {
               comingSoon={!meta.playable}
               best={meta.playable ? (highScores[id] ?? 0) : null}
               accent={
-                id === "blocks" ? "cyan" : id === "chase" ? "rose" : id === "swarm" ? "amber" : "emerald"
+                id === "blocks"
+                  ? "cyan"
+                  : id === "chase"
+                    ? "rose"
+                    : id === "swarm"
+                      ? "amber"
+                      : id === "brick"
+                        ? "sky"
+                        : "emerald"
               }
               onClick={meta.playable ? () => onPlay(id) : undefined}
             />
@@ -71,7 +79,7 @@ function GameCard({
   action?: string;
   comingSoon?: boolean;
   best?: number | null;
-  accent?: "emerald" | "cyan" | "rose" | "amber";
+  accent?: "emerald" | "cyan" | "rose" | "amber" | "sky";
   onClick?: () => void;
 }) {
   const playableClass =
@@ -81,7 +89,9 @@ function GameCard({
         ? "border-rose-300/25 bg-rose-400/10 active:scale-[0.99]"
         : accent === "amber"
           ? "border-amber-300/25 bg-amber-400/10 active:scale-[0.99]"
-          : "border-emerald-300/25 bg-emerald-400/10 active:scale-[0.99]";
+          : accent === "sky"
+            ? "border-sky-300/25 bg-sky-400/10 active:scale-[0.99]"
+            : "border-emerald-300/25 bg-emerald-400/10 active:scale-[0.99]";
   const className = `w-full rounded-2xl border px-5 py-4 text-left shadow-[0_12px_40px_rgba(0,0,0,0.35)] ${
     comingSoon ? "border-white/8 bg-white/4 opacity-55" : playableClass
   }`;
@@ -100,7 +110,9 @@ function GameCard({
                 ? "text-rose-200/80"
                 : accent === "amber"
                   ? "text-amber-200/80"
-                  : "text-emerald-200/80"
+                  : accent === "sky"
+                    ? "text-sky-200/80"
+                    : "text-emerald-200/80"
           }`}
         >
           {comingSoon ? "Soon" : action}

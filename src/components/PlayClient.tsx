@@ -42,7 +42,16 @@ const SwarmCanvas = dynamic(() => import("@/components/SwarmCanvas"), {
   ),
 });
 
-type Screen = "splash" | "menu" | "snake" | "blocks" | "chase" | "swarm";
+const BrickCanvas = dynamic(() => import("@/components/BrickCanvas"), {
+  ssr: false,
+  loading: () => (
+    <div className="flex aspect-[464/536] w-full max-w-[464px] items-center justify-center rounded-[28px] border border-white/10 bg-white/5 text-sky-200/70">
+      Loading wall…
+    </div>
+  ),
+});
+
+type Screen = "splash" | "menu" | "snake" | "blocks" | "chase" | "swarm" | "brick";
 
 export function PlayClient() {
   const [screen, setScreen] = useState<Screen>("splash");
@@ -58,6 +67,7 @@ export function PlayClient() {
             if (gameId === "blocks") setScreen("blocks");
             if (gameId === "chase") setScreen("chase");
             if (gameId === "swarm") setScreen("swarm");
+            if (gameId === "brick") setScreen("brick");
           }}
         />
       ) : screen === "snake" ? (
@@ -66,8 +76,10 @@ export function PlayClient() {
         <BlocksCanvas onBack={() => setScreen("menu")} />
       ) : screen === "chase" ? (
         <ChaseCanvas onBack={() => setScreen("menu")} />
-      ) : (
+      ) : screen === "swarm" ? (
         <SwarmCanvas onBack={() => setScreen("menu")} />
+      ) : (
+        <BrickCanvas onBack={() => setScreen("menu")} />
       )}
     </AuthProvider>
   );
