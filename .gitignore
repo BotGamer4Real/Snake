@@ -51,3 +51,6 @@ android/app/release/
 *.jks
 android/keystore.properties
 android/upload-keystore.jks
+
+# tauri
+src-tauri/target/
