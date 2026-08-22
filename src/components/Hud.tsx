@@ -1,14 +1,25 @@
-import type { HudPayload } from "@/game/events";
+type PlayHud = {
+  score: number;
+  highScore: number;
+};
 
-export function Hud({ hud }: { hud: HudPayload }) {
+export function Hud({
+  hud,
+  title,
+  kicker = "Classic rules",
+}: {
+  hud: PlayHud;
+  title: string;
+  kicker?: string;
+}) {
   return (
     <div className="flex min-w-0 flex-1 items-end justify-between gap-2">
       <div className="min-w-0">
         <p className="hidden text-[11px] font-semibold uppercase tracking-[0.28em] text-cyan-100/45 sm:block">
-          Classic rules
+          {kicker}
         </p>
         <h1 className="bg-gradient-to-r from-emerald-200 via-white to-rose-200 bg-clip-text text-2xl font-semibold tracking-[0.18em] text-transparent sm:text-4xl">
-          SNAKE
+          {title}
         </h1>
       </div>
       <div className="flex gap-1.5 sm:gap-2">

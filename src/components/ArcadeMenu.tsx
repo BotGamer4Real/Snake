@@ -2,13 +2,13 @@
 
 import { AccountBar } from "@/components/AccountBar";
 import { useAuth } from "@/components/AuthProvider";
-import { GAME_IDS, GAME_META } from "@/lib/games";
+import { GAME_IDS, GAME_META, type GameId } from "@/lib/games";
 
 type Props = {
-  onPlaySnake: () => void;
+  onPlay: (gameId: GameId) => void;
 };
 
-export function ArcadeMenu({ onPlaySnake }: Props) {
+export function ArcadeMenu({ onPlay }: Props) {
   const { highScores } = useAuth();
 
   return (
@@ -45,7 +45,8 @@ export function ArcadeMenu({ onPlaySnake }: Props) {
               action="Play"
               comingSoon={!meta.playable}
               best={meta.playable ? (highScores[id] ?? 0) : null}
-              onClick={meta.playable ? onPlaySnake : undefined}
+              accent={id === "blocks" ? "cyan" : "emerald"}
+              onClick={meta.playable ? () => onPlay(id) : undefined}
             />
           );
         })}
@@ -60,6 +61,7 @@ function GameCard({
   action,
   comingSoon = false,
   best,
+  accent = "emerald",
   onClick,
 }: {
   title: string;
@@ -67,12 +69,15 @@ function GameCard({
   action?: string;
   comingSoon?: boolean;
   best?: number | null;
+  accent?: "emerald" | "cyan";
   onClick?: () => void;
 }) {
+  const playableClass =
+    accent === "cyan"
+      ? "border-cyan-300/25 bg-cyan-400/10 active:scale-[0.99]"
+      : "border-emerald-300/25 bg-emerald-400/10 active:scale-[0.99]";
   const className = `w-full rounded-2xl border px-5 py-4 text-left shadow-[0_12px_40px_rgba(0,0,0,0.35)] ${
-    comingSoon
-      ? "border-white/8 bg-white/4 opacity-55"
-      : "border-emerald-300/25 bg-emerald-400/10 active:scale-[0.99]"
+    comingSoon ? "border-white/8 bg-white/4 opacity-55" : playableClass
   }`;
 
   const body = (
@@ -81,7 +86,11 @@ function GameCard({
         <h2 className="text-xl font-semibold tracking-[0.14em] text-white uppercase">
           {title}
         </h2>
-        <span className="text-[11px] font-semibold tracking-[0.18em] text-emerald-200/80 uppercase">
+        <span
+          className={`text-[11px] font-semibold tracking-[0.18em] uppercase ${
+            accent === "cyan" ? "text-cyan-200/80" : "text-emerald-200/80"
+          }`}
+        >
           {comingSoon ? "Soon" : action}
         </span>
       </div>

@@ -1,4 +1,4 @@
-export const GAME_IDS = ["snake", "chase", "stack"] as const;
+export const GAME_IDS = ["snake", "chase", "blocks"] as const;
 
 export type GameId = (typeof GAME_IDS)[number];
 
@@ -16,10 +16,10 @@ export const GAME_META: Record<
     blurb: "Original maze chase. Coming next.",
     playable: false,
   },
-  stack: {
-    title: "Stack",
-    blurb: "Original falling blocks. Coming next.",
-    playable: false,
+  blocks: {
+    title: "Blocks",
+    blurb: "Classic falling pieces. Clear lines. Don't top out.",
+    playable: true,
   },
 };
 
@@ -28,5 +28,5 @@ export function isGameId(value: string): value is GameId {
 }
 
 export function emptyHighScores(): Record<GameId, number> {
-  return { snake: 0, chase: 0, stack: 0 };
+  return { snake: 0, chase: 0, blocks: 0 };
 }

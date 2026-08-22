@@ -2,6 +2,7 @@ import { emptyHighScores, type GameId } from "@/lib/games";
 
 const SCORE_KEY_PREFIX = "arcade.highScore.";
 const LEGACY_SNAKE_KEY = "snake.highScore";
+const LEGACY_STACK_KEY = `${SCORE_KEY_PREFIX}stack`;
 
 function scoreKey(gameId: GameId): string {
   return `${SCORE_KEY_PREFIX}${gameId}`;
@@ -15,6 +16,14 @@ export function loadHighScore(gameId: GameId): number {
     const migrated = parseScore(legacy);
     if (migrated > 0) {
       window.localStorage.setItem(scoreKey("snake"), String(migrated));
+    }
+    return migrated;
+  }
+  if (raw == null && gameId === "blocks") {
+    const legacy = window.localStorage.getItem(LEGACY_STACK_KEY);
+    const migrated = parseScore(legacy);
+    if (migrated > 0) {
+      window.localStorage.setItem(scoreKey("blocks"), String(migrated));
     }
     return migrated;
   }
