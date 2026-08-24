@@ -1,9 +1,16 @@
 # Google Play — first upload
 
-Package name (do not change after the first upload): `com.botgamer4real.arcade`  
-On-device name: **BotGamers Arcade**  
-Signed bundle: `android/app/build/outputs/bundle/release/app-release.aab`  
-Privacy policy: https://botgamers-arcade.vercel.app/privacy
+Do not change the package name after the first upload. Google treats it as the app identity forever.
+
+| Field | Value |
+|---|---|
+| Package name | `com.botgamer4real.arcade` |
+| On-device name | **BotGamers Arcade** |
+| versionCode | `1` |
+| versionName | `1.0` |
+| Signed bundle | `android/app/build/outputs/bundle/release/app-release.aab` |
+| Privacy policy | https://botgamers-arcade.vercel.app/privacy |
+| Account deletion | GitHub issue on [BotGamer4Real/botgamers-arcade](https://github.com/BotGamer4Real/botgamers-arcade) |
 
 ## Create the app
 

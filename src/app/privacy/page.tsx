@@ -35,8 +35,8 @@ export default function PrivacyPage() {
           with the email on the account. We will remove the profile and scores.
         </p>
         <p>
-          The Play Store listing for this app uses this page as its privacy policy:
-          https://botgamers-arcade.vercel.app/privacy
+          The Play Store and Steam listings for this app use this page as their privacy
+          policy: https://botgamers-arcade.vercel.app/privacy
         </p>
       </div>
     </main>

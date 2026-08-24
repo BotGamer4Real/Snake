@@ -3,6 +3,8 @@ name = "botgamers_arcade"
 version = "0.1.0"
 description = "BotGamers Arcade"
 authors = ["BotGamer4Real"]
+homepage = "https://botgamers-arcade.vercel.app"
+repository = "https://github.com/BotGamer4Real/botgamers-arcade"
 edition = "2021"
 
 [lib]

@@ -15,12 +15,12 @@ Email sign-in uses the linked BotGamers Arcade Supabase project. Sessions persis
 
 One web game (`main` on GitHub) feeds every store:
 
-| Target | How |
-|---|---|
-| Balance Hub | Live site: https://botgamers-arcade.vercel.app |
-| Android (this step) | Capacitor wrapper in `android/` |
-| iPhone | Same Capacitor project + `npx cap add ios` on a Mac |
-| Steam | Later: Tauri 2 desktop build of the same `out/` folder |
+| Target | How | Identity (locked for first upload) |
+|---|---|---|
+| Balance Hub | Live site: https://botgamers-arcade.vercel.app | — |
+| Android / Play | Capacitor wrapper in `android/` | `com.botgamer4real.arcade` — `docs/PLAY-CONSOLE.md` |
+| iPhone | Same Capacitor project + `npx cap add ios` on a Mac | — |
+| Steam | Tauri 2 desktop build of the same `out/` folder | `com.botgamer4real.arcade` / `BotGamersArcade.exe` — `docs/STEAM.md` |
 
 ### Steam (desktop)
 
@@ -35,7 +35,7 @@ npm run steam:dev
 npm run steam:build
 ```
 
-3. The installer lands under `src-tauri/target/release/bundle/`.
+3. The installer lands under `src-tauri/target/release/bundle/`. First Steamworks fields: `docs/STEAM.md`.
 4. Then in Steamworks: create the app, upload that build with SteamPipe, fill the store page, submit for review.
 
 Google identity verification is done. Play upload steps, listing copy, and Data safety answers: `docs/PLAY-CONSOLE.md`.
