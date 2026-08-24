@@ -239,7 +239,7 @@ export class SnakeScene extends Phaser.Scene {
     g.fillStyle(COLOR.board, 1);
     g.fillRoundedRect(boardX, boardY, width, height, radius);
 
-    g.fillStyle(COLOR.grid, 0.45);
+    g.fillStyle(COLOR.grid, 0.55);
     for (let y = 0; y < ROWS; y += 1) {
       for (let x = 0; x < COLS; x += 1) {
         g.fillCircle(
@@ -250,7 +250,7 @@ export class SnakeScene extends Phaser.Scene {
       }
     }
 
-    g.lineStyle(1, COLOR.grid, 0.35);
+    g.lineStyle(1.5, COLOR.grid, 0.7);
     g.strokeRoundedRect(boardX + 0.5, boardY + 0.5, width - 1, height - 1, radius);
 
     this.drawFood(g, glow, time);

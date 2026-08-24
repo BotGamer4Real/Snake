@@ -3,9 +3,9 @@ export const PAD = 28;
 
 export const COLOR = {
   void: 0x070b14,
-  board: 0x0c1424,
-  boardAlt: 0x0e182c,
-  grid: 0x1a2740,
+  board: 0x1e3554,
+  boardAlt: 0x244063,
+  grid: 0x6b8ab3,
   snakeHead: 0xb8ffd4,
   snakeBody: 0x3dff9a,
   snakeTail: 0x0d9488,
