@@ -7,7 +7,7 @@ export default function PrivacyPage() {
         BotGamers Arcade
       </p>
       <h1 className="mt-2 text-3xl font-semibold text-white">Privacy policy</h1>
-      <p className="mt-2 text-sm text-white/50">Last updated 23 August 2026</p>
+      <p className="mt-2 text-sm text-white/50">Last updated 24 August 2026</p>
 
       <div className="mt-8 space-y-5 text-sm leading-6">
         <p>
