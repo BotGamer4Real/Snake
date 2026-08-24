@@ -2,7 +2,7 @@ import type { CapacitorConfig } from "@capacitor/cli";
 
 const config: CapacitorConfig = {
   appId: "com.botgamer4real.snake",
-  appName: "Snake",
+  appName: "BotGamers Arcade",
   webDir: "out",
   server: {
     androidScheme: "https",

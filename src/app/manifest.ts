@@ -6,7 +6,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "BotGamers Arcade",
     short_name: "BotGamers",
-    description: "Play Snake now. More original games coming next.",
+    description: "Snake, Chase, Blocks, Swarm, and Brick.",
     start_url: "/",
     display: "standalone",
     background_color: "#070b14",

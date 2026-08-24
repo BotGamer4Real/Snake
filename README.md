@@ -44,7 +44,7 @@ npm run steam:build
 3. The installer lands under `src-tauri/target/release/bundle/`.
 4. Then in Steamworks: create the app, upload that build with SteamPipe, fill the store page, submit for review.
 
-Play Console stays paused until Google verification finishes.
+Google identity verification is done. Play upload steps, listing copy, and Data safety answers: `docs/PLAY-CONSOLE.md`.
 
 ### Android on your Pixel 7a (USB)
 

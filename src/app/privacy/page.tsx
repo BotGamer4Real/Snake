@@ -7,33 +7,36 @@ export default function PrivacyPage() {
         BotGamers Arcade
       </p>
       <h1 className="mt-2 text-3xl font-semibold text-white">Privacy policy</h1>
-      <p className="mt-2 text-sm text-white/50">Last updated 22 August 2026</p>
+      <p className="mt-2 text-sm text-white/50">Last updated 23 August 2026</p>
 
       <div className="mt-8 space-y-5 text-sm leading-6">
         <p>
-          BotGamers Arcade is a collection of single-player games. If you play without an
-          account, we store your high score for each game only on your device.
+          BotGamers Arcade is a collection of single-player games (including Snake, Chase,
+          Blocks, Swarm, and Brick). If you play without an account, we store your high
+          score for each game only on your device.
         </p>
         <p>
           If you create an account we collect your email address, password (stored by
           Supabase Auth, not in plain text), a display name you choose, and your high
           score for each game so they can sync across devices. This is stored in our
-          Supabase project.
+          Supabase project and sent over HTTPS.
         </p>
         <p>
-          We do not sell your data. We do not use advertising SDKs. Scores may appear on
-          a public leaderboard with your display name once that feature ships.
+          We do not sell your data. We do not use advertising SDKs or analytics SDKs.
+          Scores may appear on a public leaderboard with your display name once that
+          feature ships.
         </p>
         <p>
-          You can sign out at any time. Account deletion will remove your profile and
-          scores from our database when that feature is enabled.
-        </p>
-        <p>
-          Questions: contact the developer through the GitHub repository{" "}
+          You can sign out at any time. To delete your account and cloud scores, open an
+          issue on{" "}
           <a className="text-emerald-300 underline" href="https://github.com/BotGamer4Real/Snake">
             BotGamer4Real/Snake
-          </a>
-          .
+          </a>{" "}
+          with the email on the account. We will remove the profile and scores.
+        </p>
+        <p>
+          The Play Store listing for this app uses this page as its privacy policy:
+          https://snake-self-pi.vercel.app/privacy
         </p>
       </div>
     </main>

@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "BotGamers Arcade",
-  description: "BotGamers Arcade. Play Snake now. More original games coming next.",
+  description: "BotGamers Arcade. Snake, Chase, Blocks, Swarm, and Brick.",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
