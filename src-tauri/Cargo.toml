@@ -1,12 +1,12 @@
 [package]
-name = "snake"
+name = "botgamers_arcade"
 version = "0.1.0"
-description = "Classic Snake"
+description = "BotGamers Arcade"
 authors = ["BotGamer4Real"]
 edition = "2021"
 
 [lib]
-name = "snake_lib"
+name = "botgamers_arcade_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]

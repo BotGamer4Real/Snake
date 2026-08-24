@@ -1,7 +1,7 @@
 import type { CapacitorConfig } from "@capacitor/cli";
 
 const config: CapacitorConfig = {
-  appId: "com.botgamer4real.snake",
+  appId: "com.botgamer4real.arcade",
   appName: "BotGamers Arcade",
   webDir: "out",
   server: {

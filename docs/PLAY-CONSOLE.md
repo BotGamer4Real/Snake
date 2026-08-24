@@ -1,9 +1,9 @@
 # Google Play — first upload
 
-Package name (do not change after the first upload): `com.botgamer4real.snake`  
+Package name (do not change after the first upload): `com.botgamer4real.arcade`  
 On-device name: **BotGamers Arcade**  
 Signed bundle: `android/app/build/outputs/bundle/release/app-release.aab`  
-Privacy policy: https://snake-self-pi.vercel.app/privacy
+Privacy policy: https://botgamers-arcade.vercel.app/privacy
 
 ## Create the app
 

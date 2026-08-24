@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "Classic Snake",
+  "productName": "BotGamers Arcade",
   "version": "0.1.0",
-  "identifier": "com.botgamer4real.snake",
+  "identifier": "com.botgamer4real.arcade",
   "build": {
     "beforeDevCommand": "npm run dev",
     "devUrl": "http://localhost:3000",
@@ -13,7 +13,7 @@
     "windows": [
       {
         "label": "main",
-        "title": "Classic Snake",
+        "title": "BotGamers Arcade",
         "width": 920,
         "height": 1040,
         "resizable": true

@@ -29,14 +29,14 @@ export default function PrivacyPage() {
         <p>
           You can sign out at any time. To delete your account and cloud scores, open an
           issue on{" "}
-          <a className="text-emerald-300 underline" href="https://github.com/BotGamer4Real/Snake">
-            BotGamer4Real/Snake
+          <a className="text-emerald-300 underline" href="https://github.com/BotGamer4Real/botgamers-arcade">
+            BotGamer4Real/botgamers-arcade
           </a>{" "}
           with the email on the account. We will remove the profile and scores.
         </p>
         <p>
           The Play Store listing for this app uses this page as its privacy policy:
-          https://snake-self-pi.vercel.app/privacy
+          https://botgamers-arcade.vercel.app/privacy
         </p>
       </div>
     </main>

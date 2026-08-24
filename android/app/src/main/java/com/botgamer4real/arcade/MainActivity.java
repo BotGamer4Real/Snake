@@ -1,4 +1,4 @@
-package com.botgamer4real.snake;
+package com.botgamer4real.arcade;
 
 import com.getcapacitor.BridgeActivity;
 

@@ -1,12 +1,6 @@
-# Classic Snake
+# BotGamers Arcade
 
-Faithful recreation of the original 1997 Nokia 6110 Snake rules.
-
-- Grid: 20×15
-- Start length: 3
-- +1 score / +1 segment per food
-- Walls and self-collision end the run
-- Instant restart
+Five original arcade games: Snake, Chase, Blocks, Swarm, and Brick.
 
 See `docs/REQUIREMENTS.md` and `docs/BALANCE-PLATFORM.md`.
 
@@ -15,7 +9,7 @@ npm install
 npm run dev
 ```
 
-Email sign-in uses the linked Snake Supabase project. Sessions persist in the browser. High scores sync as the max of local and cloud, so the same account can continue on another device after signing in.
+Email sign-in uses the linked BotGamers Arcade Supabase project. Sessions persist in the browser. High scores sync as the max of local and cloud, so the same account can continue on another device after signing in.
 
 ## Publishing map
 
@@ -23,7 +17,7 @@ One web game (`main` on GitHub) feeds every store:
 
 | Target | How |
 |---|---|
-| Balance Hub | Live site: https://snake-self-pi.vercel.app |
+| Balance Hub | Live site: https://botgamers-arcade.vercel.app |
 | Android (this step) | Capacitor wrapper in `android/` |
 | iPhone | Same Capacitor project + `npx cap add ios` on a Mac |
 | Steam | Later: Tauri 2 desktop build of the same `out/` folder |

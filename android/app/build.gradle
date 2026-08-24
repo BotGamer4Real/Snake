@@ -7,10 +7,10 @@ if (keystorePropertiesFile.exists()) {
 }
 
 android {
-    namespace = "com.botgamer4real.snake"
+    namespace = "com.botgamer4real.arcade"
     compileSdk = rootProject.ext.compileSdkVersion
     defaultConfig {
-        applicationId "com.botgamer4real.snake"
+        applicationId "com.botgamer4real.arcade"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
