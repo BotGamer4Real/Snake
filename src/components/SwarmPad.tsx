@@ -14,8 +14,8 @@ export function SwarmPad({
   onFireEnd: () => void;
 }) {
   return (
-    <div className="flex items-end justify-center gap-8 select-none">
-      <div className="flex gap-3">
+    <div className="flex items-end justify-center gap-5 select-none sm:gap-8">
+      <div className="flex gap-2.5 sm:gap-3">
         <HoldButton label="left" onPress={() => onMoveStart("left")} onRelease={() => onMoveEnd("left")} />
         <HoldButton label="right" onPress={() => onMoveStart("right")} onRelease={() => onMoveEnd("right")} />
       </div>
@@ -53,7 +53,7 @@ function HoldButton({
     <button
       type="button"
       aria-label={label}
-      className="flex h-[4.85rem] w-[4.85rem] items-center justify-center rounded-full border border-white/12 bg-[linear-gradient(180deg,rgba(255,255,255,0.14),rgba(255,255,255,0.04))] text-white shadow-[0_10px_24px_rgba(0,0,0,0.35),inset_0_1px_0_rgba(255,255,255,0.25)] touch-none select-none active:translate-y-[1px] active:brightness-75 sm:h-16 sm:w-16"
+      className="flex h-[6.375rem] w-[6.375rem] items-center justify-center rounded-full border border-white/12 bg-[linear-gradient(180deg,rgba(255,255,255,0.14),rgba(255,255,255,0.04))] text-white shadow-[0_10px_24px_rgba(0,0,0,0.35),inset_0_1px_0_rgba(255,255,255,0.25)] touch-none select-none active:translate-y-[1px] active:brightness-75 sm:h-16 sm:w-16"
       onContextMenu={(event) => event.preventDefault()}
       onPointerDown={(event) => {
         event.preventDefault();
@@ -66,7 +66,7 @@ function HoldButton({
     >
       <svg
         viewBox="0 0 24 24"
-        className={`h-8 w-8 sm:h-7 sm:w-7 ${rotate}`}
+        className={`h-11 w-11 sm:h-7 sm:w-7 ${rotate}`}
         fill="none"
         stroke="currentColor"
         strokeWidth="2.4"

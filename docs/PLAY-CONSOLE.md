@@ -6,8 +6,8 @@ Do not change the package name after the first upload. Google treats it as the a
 |---|---|
 | Package name | `com.botgamer4real.arcade` |
 | On-device name | **BotGamers Arcade** |
-| versionCode | `1` |
-| versionName | `1.0` |
+| versionCode | `2` |
+| versionName | `1.0.1` |
 | Signed bundle | `android/app/build/outputs/bundle/release/app-release.aab` |
 | Privacy policy | https://botgamers-arcade.vercel.app/privacy |
 | Account deletion | GitHub issue on [BotGamer4Real/botgamers-arcade](https://github.com/BotGamer4Real/botgamers-arcade) |
@@ -16,7 +16,7 @@ Do not change the package name after the first upload. Google treats it as the a
 
 1. [Play Console](https://play.google.com/console) → **Create app**
 2. App name: `BotGamers Arcade`
-3. Default language: English (United States)
+3. Default language: English (United Kingdom)
 4. App or game: **Game**
 5. Free
 6. Declare that it meets the Developer Programme Policies
